@@ -8,6 +8,15 @@ class infoFilm {
 
 };
 
+function hidButton(premierID){
+    const buttonDown = document.getElementById();
+    if(premierID <= 7){
+        buttonDown.style.hidden = true;
+    }else{
+        buttonDown.style.hidden = false;
+    }  
+}
+
 function afficherFilms(section, film){
     const sectionFilms = document.querySelector(section);
     const filmElement = document.createElement("film");
@@ -33,7 +42,6 @@ function listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer){
 
 async function RecuperationEtStockageDeFilm(methodeDeTri, page){
     const indexPage = 'page'+methodeDeTri+page.toString();
-    
     let pagefilms = window.localStorage.getItem("'"+indexPage+"'");
     if(pagefilms === null){
         const reponse = await fetch('http://localhost:8000/api/v1/titles/?page='+page.toString()+'&sort_by='+methodeDeTri);
@@ -43,7 +51,6 @@ async function RecuperationEtStockageDeFilm(methodeDeTri, page){
     }else{
         pagefilms = JSON.parse(pagefilms);
     };
-    console.log(pagefilms);
     let positionFilm = (page*5)-4;
     
     for (let film of pagefilms.results) {
@@ -75,6 +82,42 @@ async function recuperationFilm(methodeDeTri, premierFilmIDARecuperer, nombreFil
     }    
     return filmsRecuperes;
 };
+
+async function generateButtonUpDown (sectionButton, methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage){
+    document.addEventListener('DOMContentLoaded', function() {
+        let buttonDown = document.createElement('button');
+        buttonDown.type = 'button';
+        buttonDown.innerHTML = 'Films Précédents';
+        buttonDown.className = 'btn-class-down';
+        buttonDown.id = sectionButton+'btn-id-down';
+        buttonDown.hidden = true;
+        buttonDown.onclick = function(){          
+            indiceDeDepart -=7;
+            if (indiceDeDepart <=7){
+                buttonDown.hidden = true;
+            }
+            document.querySelector(sectionPage).innerHTML= "";
+            recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
+            };
+        let buttonUp = document.createElement('button');
+        buttonUp.type = 'button';
+        buttonUp.innerHTML = 'Films Suivants';
+        buttonUp.className = 'btn-class-up';
+        buttonUp.id = sectionButton+'btn-id-up';
+        buttonUp.onclick = function(){          
+            indiceDeDepart +=7;
+            if (indiceDeDepart >7){
+                buttonDown.hidden = false;
+            };
+            document.querySelector(sectionPage).innerHTML= "";
+            recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
+            };
+        let container = document.querySelector(sectionButton);
+        container.appendChild(buttonDown);
+        container.appendChild(buttonUp);
+    }, false);
+}
+
 async function recuperationStockageEtAffichageFilm(methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage){
     let filmRecup = await recuperationFilm(methodeDeTri, indiceDeDepart, nombreFilmARecuperer);
     for (let film of filmRecup){
@@ -84,20 +127,11 @@ async function recuperationStockageEtAffichageFilm(methodeDeTri, indiceDeDepart,
 }
 
 let methodeDeTri = '-imdb_score';
-let indiceDeDepart = 2;
+var indiceDeDepart = 2;
 let nombreFilmARecuperer = 7;
 let sectionPage = '.populaires';
+let sectionButton = '.populaires-btn';
+generateButtonUpDown(sectionButton, methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage);
 recuperationStockageEtAffichageFilm('-imdb_score', 1, 1, '.meilleurFilm');
 recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
-const boutonSuivant = document.querySelector('.populaires-btn');
-boutonSuivant.addEventListener("click", function(){
-    indiceDeDepart +=7;
-    document.querySelector('.populaires').innerHTML= "";
-    recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
-}
-);
-/*let filmRecup = await recuperationFilm('-imdb_score', 1, 7);
-for (let film of filmRecup){
-    afficherFilms('.populaires', film);
-    console.log(film);
-};*/
+
