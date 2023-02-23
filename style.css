@@ -23,3 +23,8 @@
     overflow-x: auto;
     overflow-y: scroll;
   }
+  .buttonModaleX:hover{
+    font-weight: bold;
+    cursor:pointer;
+
+  }

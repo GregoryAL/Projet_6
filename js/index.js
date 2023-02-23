@@ -34,9 +34,16 @@ function affichageInfoFilm(section, idMovie){
     const infoFilmElement = document.createElement("infoFilmElement");
     
     const boutonFermetureModale = document.createElement("p");
+    boutonFermetureModale.className = 'buttonModaleX';
     boutonFermetureModale.innerText = 'X';
     boutonFermetureModale.style.fontSize = "30px";
     boutonFermetureModale.style.float = 'right';
+    boutonFermetureModale.onclick = function(){
+        const modalSelector = document.querySelector('.ModalMovie');
+        modalSelector.style.visibility = "hidden";
+        sectionInfoFilm.innerHTML = ""
+    };
+    
 
     const imageInfoFilm = document.createElement("img");
     imageInfoFilm.src = idMovie.image_url;
@@ -188,22 +195,6 @@ function generateButtonInfo (sectionButton, idMovie){
                 affichageInfoFilm('.ModalMovieContent', movieInfo);
             }
             
-            };
-        sectionButton.appendChild(buttonInfo);
-    }, false);
-};
-
-function generateButtonCloseModal (sectionButton, idMovie){
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        let buttonInfo = document.createElement('button');
-        buttonInfo.type = 'button';
-        buttonInfo.innerHTML = 'X';
-        buttonInfo.className = 'closeModal';
-        buttonInfo.onclick = async function(){       
-            const modalSelector = document.querySelector('.ModalMovie');
-            modalSelector.style.visibility = "hidden";
-            modalSelector.innerHTML = ""
             };
         sectionButton.appendChild(buttonInfo);
     }, false);
