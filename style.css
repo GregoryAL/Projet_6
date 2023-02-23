@@ -1,0 +1,25 @@
+.ModalMovie {
+    position: fixed;
+    width: 90vw;
+    height: 90vh;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    top: 5%;
+    left: 5%;
+    right: 5%;
+    bottom: 5%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ModalMovieContent {
+    border-radius: 10px;
+    background: #fff;
+    position: relative;
+    padding: 30px;
+    border: 2px solid black;
+    overflow-x: auto;
+    overflow-y: scroll;
+  }

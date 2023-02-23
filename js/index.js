@@ -33,7 +33,12 @@ function affichageInfoFilm(section, idMovie){
     const sectionInfoFilm = document.querySelector(section);
     const infoFilmElement = document.createElement("infoFilmElement");
     
-    const imageInfoFilm = document.createElement("image");
+    const boutonFermetureModale = document.createElement("p");
+    boutonFermetureModale.innerText = 'X';
+    boutonFermetureModale.style.fontSize = "30px";
+    boutonFermetureModale.style.float = 'right';
+
+    const imageInfoFilm = document.createElement("img");
     imageInfoFilm.src = idMovie.image_url;
     
     const nomInfoFilm = document.createElement("h2");
@@ -67,6 +72,7 @@ function affichageInfoFilm(section, idMovie){
     
 
     sectionInfoFilm.appendChild(infoFilmElement);
+    infoFilmElement.appendChild(boutonFermetureModale);
     infoFilmElement.appendChild(imageInfoFilm);
     infoFilmElement.appendChild(nomInfoFilm);
     infoFilmElement.appendChild(genresInfoFilm);
@@ -172,12 +178,34 @@ function generateButtonInfo (sectionButton, idMovie){
         buttonInfo.type = 'button';
         buttonInfo.innerHTML = '+';
         buttonInfo.className = 'infoFilm';
-        buttonInfo.onclick = async function(){    
-            const MovieInfo = await recuperationInfoFilm(idMovie);      
-            affichageInfoFilm('.films', MovieInfo);
+        buttonInfo.onclick = async function(){       
+            const modalSelector = document.querySelector('.ModalMovie');
+            if (modalSelector.style.visibility === "visible"){
+                //
+            }else{
+                modalSelector.style.visibility = "visible";
+                const movieInfo = await recuperationInfoFilm(idMovie); 
+                affichageInfoFilm('.ModalMovieContent', movieInfo);
+            }
+            
             };
         sectionButton.appendChild(buttonInfo);
-        console.log(MovieInfo);
+    }, false);
+};
+
+function generateButtonCloseModal (sectionButton, idMovie){
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        let buttonInfo = document.createElement('button');
+        buttonInfo.type = 'button';
+        buttonInfo.innerHTML = 'X';
+        buttonInfo.className = 'closeModal';
+        buttonInfo.onclick = async function(){       
+            const modalSelector = document.querySelector('.ModalMovie');
+            modalSelector.style.visibility = "hidden";
+            modalSelector.innerHTML = ""
+            };
+        sectionButton.appendChild(buttonInfo);
     }, false);
 };
 
