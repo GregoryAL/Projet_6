@@ -8,15 +8,6 @@ class infoFilm {
 
 };
 
-function hidButton(premierID){
-    const buttonDown = document.getElementById();
-    if(premierID <= 7){
-        buttonDown.style.hidden = true;
-    }else{
-        buttonDown.style.hidden = false;
-    }  
-}
-
 function afficherFilms(section, film){
     const sectionFilms = document.querySelector(section);
     const filmElement = document.createElement("film");
@@ -24,10 +15,95 @@ function afficherFilms(section, film){
     imageFilm.src = film.image;
     const nomFilm = document.createElement("h3");
     nomFilm.innerText = film.title;
+    const divButton = document.createElement("div");
+    divButton.className = film.id.toString()+'-btn';
+    
     sectionFilms.appendChild(filmElement);
     filmElement.appendChild(imageFilm);
     filmElement.appendChild(nomFilm);
+    filmElement.appendChild(divButton);
+
+    generateButtonInfo(divButton, film.id);
+
 };
+
+function affichageInfoFilm(section, idMovie){
+    console.log(idMovie);
+    console.log(idMovie.genres);
+    const sectionInfoFilm = document.querySelector(section);
+    const infoFilmElement = document.createElement("infoFilmElement");
+    
+    const imageInfoFilm = document.createElement("image");
+    imageInfoFilm.src = idMovie.image_url;
+    
+    const nomInfoFilm = document.createElement("h2");
+    nomInfoFilm.innerText = idMovie.title;
+    
+    const genresInfoFilm = browseListToCreateElement('Genre(s) : ', idMovie.genres);
+    
+    const dateSortieInfoFilm = document.createElement("p");
+    dateSortieInfoFilm.innerText = 'Date de sortie : '+idMovie.date_published+'.';
+
+    const ratingInfoFilm = document.createElement("p");
+    ratingInfoFilm.innerText = 'Classement : note de '+idMovie.avg_vote+' sur '+idMovie.votes+' votants.';
+
+    const ratingImdbInfoFilm = document.createElement("p");
+    ratingImdbInfoFilm.innerText = 'Classement IMDB : note de '+idMovie.imdb_score+'.';
+
+    const directorsInfoFilm = browseListToCreateElement('Realisateur(s) : ', idMovie.directors);
+
+    const actorsInfoFilm = browseListToCreateElement('Acteur(s, ice(s)) : ', idMovie.actors);
+
+    const lengthInfoFilm = document.createElement("p");
+    lengthInfoFilm.innerText = 'Durée : '+idMovie.duration+' minutes.';
+
+    const countryOfOriginInfoFilm = browseListToCreateElement("Pays d'origine : ", idMovie.countries);
+
+    const boxOfficeResultInfoFilm = document.createElement("p");
+    boxOfficeResultInfoFilm.innerText = 'Résultat au Box Office : '+idMovie.worldwide_gross_income+' dollars.';
+
+    const descriptionInfoFilm = document.createElement("p") ;
+    descriptionInfoFilm.innerText = 'Résumé : '+idMovie.long_description;
+    
+
+    sectionInfoFilm.appendChild(infoFilmElement);
+    infoFilmElement.appendChild(imageInfoFilm);
+    infoFilmElement.appendChild(nomInfoFilm);
+    infoFilmElement.appendChild(genresInfoFilm);
+    infoFilmElement.appendChild(dateSortieInfoFilm);
+    infoFilmElement.appendChild(ratingInfoFilm);
+    infoFilmElement.appendChild(ratingImdbInfoFilm);
+    infoFilmElement.appendChild(directorsInfoFilm);
+    infoFilmElement.appendChild(actorsInfoFilm);
+    infoFilmElement.appendChild(lengthInfoFilm);
+    infoFilmElement.appendChild(countryOfOriginInfoFilm);
+    infoFilmElement.appendChild(boxOfficeResultInfoFilm);
+    infoFilmElement.appendChild(descriptionInfoFilm);
+
+};
+
+function browseListToCreateElement(categorie, source){
+    console.log(source);
+    const ListConteneur = document.createElement("p");
+    ListConteneur.innerText = categorie+' \n';
+    if (source.length > 1){
+        let i = 0;
+        if (i < (source.length-1)){
+            let ListElement = document.createElement("span");
+            ListElement.innerText = source[i]+', \n';
+            ListConteneur.appendChild(ListElement);
+            i++;
+        };
+        let ListElement = document.createElement("span");
+        ListElement.innerText = source[i]+'.';
+        ListConteneur.appendChild(ListElement);
+    }else{
+        const ListElement = document.createElement("span");
+        ListElement.innerText = source[0]+'.';
+        ListConteneur.appendChild(ListElement);
+    };
+    return ListConteneur;
+}
 
 function listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer){
     let pageAAjouter= (Math.trunc((premierFilmIDARecuperer-1)/5)+1);
@@ -38,6 +114,12 @@ function listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer){
         pageAAjouter++;
     };
     return listeDesPages;
+};
+
+async function recuperationInfoFilm(idFilm){
+    const reponse = await fetch('http://localhost:8000/api/v1/titles/'+idFilm.toString());
+    let infoFilmParsed = await reponse.json();
+    return infoFilmParsed;
 };
 
 async function RecuperationEtStockageDeFilm(methodeDeTri, page){
@@ -83,6 +165,22 @@ async function recuperationFilm(methodeDeTri, premierFilmIDARecuperer, nombreFil
     return filmsRecuperes;
 };
 
+function generateButtonInfo (sectionButton, idMovie){
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        let buttonInfo = document.createElement('button');
+        buttonInfo.type = 'button';
+        buttonInfo.innerHTML = '+';
+        buttonInfo.className = 'infoFilm';
+        buttonInfo.onclick = async function(){    
+            const MovieInfo = await recuperationInfoFilm(idMovie);      
+            affichageInfoFilm('.films', MovieInfo);
+            };
+        sectionButton.appendChild(buttonInfo);
+        console.log(MovieInfo);
+    }, false);
+};
+
 async function generateButtonUpDown (sectionButton, methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage){
     document.addEventListener('DOMContentLoaded', function() {
         let buttonDown = document.createElement('button');
@@ -122,7 +220,6 @@ async function recuperationStockageEtAffichageFilm(methodeDeTri, indiceDeDepart,
     let filmRecup = await recuperationFilm(methodeDeTri, indiceDeDepart, nombreFilmARecuperer);
     for (let film of filmRecup){
         afficherFilms(sectionPage, film);
-        console.log(film);
     };
 }
 
