@@ -22,9 +22,8 @@ function afficherFilms(section, film){
     filmElement.appendChild(imageFilm);
     filmElement.appendChild(nomFilm);
     filmElement.appendChild(divButton);
-
-    generateButtonInfo(divButton, film.id);
-
+    console.log(divButton, film.id);
+    generateButtonInfo(divButton, film.id, sectionFilms);
 };
 
 function affichageInfoFilm(section, idMovie){
@@ -82,17 +81,36 @@ function affichageInfoFilm(section, idMovie){
     infoFilmElement.appendChild(boutonFermetureModale);
     infoFilmElement.appendChild(imageInfoFilm);
     infoFilmElement.appendChild(nomInfoFilm);
-    infoFilmElement.appendChild(genresInfoFilm);
-    infoFilmElement.appendChild(dateSortieInfoFilm);
-    infoFilmElement.appendChild(ratingInfoFilm);
-    infoFilmElement.appendChild(ratingImdbInfoFilm);
-    infoFilmElement.appendChild(directorsInfoFilm);
-    infoFilmElement.appendChild(actorsInfoFilm);
-    infoFilmElement.appendChild(lengthInfoFilm);
-    infoFilmElement.appendChild(countryOfOriginInfoFilm);
-    infoFilmElement.appendChild(boxOfficeResultInfoFilm);
-    infoFilmElement.appendChild(descriptionInfoFilm);
-
+    if (idMovie.genres){
+        infoFilmElement.appendChild(genresInfoFilm);
+    };
+    if (idMovie.date_published){
+        infoFilmElement.appendChild(dateSortieInfoFilm);
+    };
+    if (idMovie.avg_vote && idMovie.votes){
+        infoFilmElement.appendChild(ratingInfoFilm);
+    };
+    if (idMovie.imdb_score){
+        infoFilmElement.appendChild(ratingImdbInfoFilm);
+    };
+    if (idMovie.directors){
+        infoFilmElement.appendChild(directorsInfoFilm);
+    };
+    if (idMovie.actors){
+        infoFilmElement.appendChild(actorsInfoFilm);
+    };
+    if (idMovie.duration){
+        infoFilmElement.appendChild(lengthInfoFilm);
+    };
+    if (idMovie.countries){
+        infoFilmElement.appendChild(countryOfOriginInfoFilm);
+    };
+    if (idMovie.worldwide_gross_income){
+        infoFilmElement.appendChild(boxOfficeResultInfoFilm);
+    };
+    if (idMovie.long_description){
+        infoFilmElement.appendChild(descriptionInfoFilm);
+    };
 };
 
 function browseListToCreateElement(categorie, source){
@@ -178,61 +196,57 @@ async function recuperationFilm(methodeDeTri, premierFilmIDARecuperer, nombreFil
     return filmsRecuperes;
 };
 
-function generateButtonInfo (sectionButton, idMovie){
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        let buttonInfo = document.createElement('button');
-        buttonInfo.type = 'button';
-        buttonInfo.innerHTML = '+';
-        buttonInfo.className = 'infoFilm';
-        buttonInfo.onclick = async function(){       
-            const modalSelector = document.querySelector('.ModalMovie');
-            if (modalSelector.style.visibility === "visible"){
-                //
-            }else{
-                modalSelector.style.visibility = "visible";
-                const movieInfo = await recuperationInfoFilm(idMovie); 
-                affichageInfoFilm('.ModalMovieContent', movieInfo);
-            }
+function generateButtonInfo (sectionButton, idMovie, sectionFilms){
+    console.log(sectionButton, idMovie);  
+    let buttonInfo = document.createElement('button');
+    buttonInfo.type = 'button';
+    buttonInfo.innerHTML = '+';
+    buttonInfo.className = 'infoFilm';
+    buttonInfo.onclick = async function(){       
+        const modalSelector = document.querySelector('.ModalMovie');
+        if (modalSelector.style.visibility === "visible"){
+            //
+        }else{
+            modalSelector.style.visibility = "visible";
+            const movieInfo = await recuperationInfoFilm(idMovie); 
+            affichageInfoFilm('.ModalMovieContent', movieInfo);
+        };
             
-            };
-        sectionButton.appendChild(buttonInfo);
-    }, false);
+    };
+    sectionButton.appendChild(buttonInfo);
 };
 
 async function generateButtonUpDown (sectionButton, methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage){
-    document.addEventListener('DOMContentLoaded', function() {
-        let buttonDown = document.createElement('button');
-        buttonDown.type = 'button';
-        buttonDown.innerHTML = 'Films Précédents';
-        buttonDown.className = 'btn-class-down';
-        buttonDown.id = sectionButton+'btn-id-down';
-        buttonDown.hidden = true;
-        buttonDown.onclick = function(){          
-            indiceDeDepart -=7;
-            if (indiceDeDepart <=7){
-                buttonDown.hidden = true;
-            }
-            document.querySelector(sectionPage).innerHTML= "";
-            recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
-            };
-        let buttonUp = document.createElement('button');
-        buttonUp.type = 'button';
-        buttonUp.innerHTML = 'Films Suivants';
-        buttonUp.className = 'btn-class-up';
-        buttonUp.id = sectionButton+'btn-id-up';
-        buttonUp.onclick = function(){          
-            indiceDeDepart +=7;
-            if (indiceDeDepart >7){
-                buttonDown.hidden = false;
-            };
-            document.querySelector(sectionPage).innerHTML= "";
-            recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
-            };
-        let container = document.querySelector(sectionButton);
-        container.appendChild(buttonDown);
-        container.appendChild(buttonUp);
-    }, false);
+    let buttonDown = document.createElement('button');
+    buttonDown.type = 'button';
+    buttonDown.innerHTML = 'Films Précédents';
+    buttonDown.className = 'btn-class-down';
+    buttonDown.id = sectionButton+'btn-id-down';
+    buttonDown.hidden = true;
+    buttonDown.onclick = function(){          
+        indiceDeDepart -=7;
+        if (indiceDeDepart <=7){
+            buttonDown.hidden = true;
+        }
+        document.querySelector(sectionPage).innerHTML= "";
+        recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
+        };
+    let buttonUp = document.createElement('button');
+    buttonUp.type = 'button';
+    buttonUp.innerHTML = 'Films Suivants';
+    buttonUp.className = 'btn-class-up';
+    buttonUp.id = sectionButton+'btn-id-up';
+    buttonUp.onclick = function(){          
+        indiceDeDepart +=7;
+        if (indiceDeDepart >7){
+            buttonDown.hidden = false;
+        };
+        document.querySelector(sectionPage).innerHTML= "";
+        recuperationStockageEtAffichageFilm(methodeDeTri,indiceDeDepart,nombreFilmARecuperer,sectionPage);
+        };
+    let container = document.querySelector(sectionButton);
+    container.appendChild(buttonDown);
+    container.appendChild(buttonUp);
 }
 
 async function recuperationStockageEtAffichageFilm(methodeDeTri, indiceDeDepart, nombreFilmARecuperer, sectionPage){
