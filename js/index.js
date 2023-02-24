@@ -24,7 +24,7 @@ async function afficherFilms(section, film){
     filmElement.appendChild(imageFilm);
     filmElement.appendChild(nomFilm);
     filmElement.appendChild(divButton);
-    generateButtonInfo(divButton, film.id, sectionFilms);
+    generateButtonInfo(divButton, film.id);
 };
 
 function affichageInfoFilm(section, idMovie){
@@ -197,7 +197,7 @@ async function recuperationFilm(methodeDeTri, genre, premierFilmIDARecuperer, no
     return filmsRecuperes;
 };
 
-function generateButtonInfo (sectionButton, idMovie, sectionFilms){
+function generateButtonInfo (sectionButton, idMovie){
     let buttonInfo = document.createElement('button');
     buttonInfo.type = 'button';
     buttonInfo.innerHTML = '+';
@@ -267,7 +267,18 @@ async function affichageSectionFilms(sectionButtonArg, methodeDeTriArg, genreArg
     await recuperationStockageEtAffichageFilm(methodeDeTri, genre, indiceDeDepart,nombreFilmARecuperer,sectionPage);
 };
 
-await recuperationStockageEtAffichageFilm('-imdb_score', '', 1, 1, '.meilleurFilm');
+async function bestMovieDisplay(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage){
+    const bestMovieParsed = await recuperationFilm(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer);
+    await afficherFilms(sectionPage, bestMovieParsed[0]);
+    const idBestMovie = bestMovieParsed[0].id;
+    const infoBestMovie = await recuperationInfoFilm(idBestMovie);
+    const bestMovieResumeContainer = document.querySelector('.bestMovie__Resume');
+    bestMovieResumeContainer.innerText = infoBestMovie.description;
+};
+
+
+
+await bestMovieDisplay('-imdb_score', '', 1, 1, '.bestMovie');
 await affichageSectionFilms('.populaires-btn', '-imdb_score','', 2, 7, '.populaires');
 await affichageSectionFilms('.popAction-btn', '-imdb_score','action', 1, 7, '.popAction');
 await affichageSectionFilms('.popRomance-btn', '-imdb_score','romance', 1, 7, '.popRomance');
