@@ -1,31 +1,48 @@
 .ModalMovie {
-    position: fixed;
-    width: 90vw;
-    height: 90vh;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-    top: 5%;
-    left: 5%;
-    right: 5%;
-    bottom: 5%;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .ModalMovieContent {
-    border-radius: 10px;
-    background: #fff;
-    position: relative;
-    padding: 30px;
-    border: 2px solid black;
-    overflow-x: auto;
-    overflow-y: scroll;
-  }
-  .buttonModaleX:hover{
-    font-weight: bold;
-    cursor:pointer;
+  position: fixed;
+  width: 90vw;
+  height: 90vh;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  top: 5%;
+  left: 5%;
+  right: 5%;
+  bottom: 5%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ModalMovieContent {
+  border-radius: 10px;
+  background: #fff;
+  position: relative;
+  padding: 30px;
+  border: 2px solid black;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+.buttonModaleX:hover{
+  font-weight: bold;
+  cursor:pointer;
 
-  }
+}
+.populaires, .popAction, .popRomance, .popComedie{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+.populaires-btn, .popAction-btn, .popRomance-btn, .popComedie-btn{
+  display: flex;
+  justify-content: space-between;
+}
+.btn-class-up{
   
+}
+.MovieName{
+  
+}
+.MovieContainer{
+}
+

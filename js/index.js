@@ -11,10 +11,12 @@ class infoFilm {
 async function afficherFilms(section, film){
     const sectionFilms = document.querySelector(section);
     const filmElement = document.createElement("film");
+    filmElement.className = 'MovieContainer';
     const imageFilm = document.createElement("img");
     imageFilm.src = film.image;
     const nomFilm = document.createElement("h3");
     nomFilm.innerText = film.title;
+    nomFilm.className = 'MovieName';
     const divButton = document.createElement("div");
     divButton.className = film.id.toString()+'-btn';
     
