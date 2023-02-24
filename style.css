@@ -1,4 +1,4 @@
-.ModalMovie {
+.Movies__ModalMovie {
   position: fixed;
   width: 90vw;
   height: 90vh;
@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: center;
 }
-.ModalMovieContent {
+.Movies__ModalMovie__Content {
   border-radius: 10px;
   background: #fff;
   position: relative;
@@ -28,21 +28,13 @@
   cursor:pointer;
 
 }
-.populaires, .popAction, .popRomance, .popComedie{
+.Movies__PopularMovies__MoviesList, .Movies__ActionMovies__MoviesList, .Movies__RomanticMovies__MoviesList, .Movies__Comedies__MoviesList{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
 }
-.populaires-btn, .popAction-btn, .popRomance-btn, .popComedie-btn{
+.Movies__PopularMovies__Scrolling-Btn, .Movies__ActionMovies__Scrolling-Btn, .Movies__RomanticMovies__Scrolling-Btn, .Movies__Comedies__Scrolling-Btn{
   display: flex;
   justify-content: space-between;
-}
-.btn-class-up{
-  
-}
-.MovieName{
-  
-}
-.MovieContainer{
 }
 
