@@ -19,15 +19,25 @@
   background: #fff;
   position: relative;
   padding: 30px;
-  border: 2px solid black;
+  border: 2px solid rgb(177, 26, 26);
   overflow-x: auto;
   overflow-y: scroll;
+  color: black;
 }
 .buttonModaleX:hover{
   font-weight: bold;
   cursor:pointer;
 
 }
+body{
+  background-color: black;
+  color:white;
+
+}
+img{
+  cursor:pointer;
+}
+
 .Movies__PopularMovies__MoviesList, .Movies__ActionMovies__MoviesList, .Movies__RomanticMovies__MoviesList, .Movies__Comedies__MoviesList{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -37,4 +47,17 @@
   display: flex;
   justify-content: space-between;
 }
-
+.btn-class-up{
+  margin-left: auto;
+}
+.Movies__BestMovie{
+  display: flex;
+  background-color: black;
+  color:white;
+}
+.Movies__BestMovie__Image{
+  max-height:100%;
+  height:auto;
+  margin-left: auto;
+  z-index: 0;
+}

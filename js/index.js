@@ -1,4 +1,5 @@
 class infoFilm {
+    // Create Object with a movie's usable informations 
     constructor(position, id, title, image)  {
         this.position = position;
         this.id = id;
@@ -9,25 +10,28 @@ class infoFilm {
 };
 
 async function afficherFilms(section, film){
+    // Select the right div 
     const sectionFilms = document.querySelector(section);
+    // Create a container that will hold image, title and a button
     const filmElement = document.createElement("film");
     filmElement.className = section+'__MovieContainer';
     const imageFilm = document.createElement("img");
-    imageFilm.src = await film.image;
+    imageFilm.src = film.image;
     const nomFilm = document.createElement("h3");
     nomFilm.innerText = film.title;
     nomFilm.className = section+'__MovieName';
     const divButton = document.createElement("div");
     divButton.className = film.id.toString()+'-btn';
-    
+    // attach the container and its elements to the div
     sectionFilms.appendChild(filmElement);
     filmElement.appendChild(imageFilm);
     filmElement.appendChild(nomFilm);
     filmElement.appendChild(divButton);
-    generateButtonInfo(divButton, film.id);
+    generateButtonInfo(divButton, film.id, imageFilm);
 };
 
 function affichageInfoFilm(section, idMovie){
+    // Create a modal that will display detailed informations on a movie
     const sectionInfoFilm = document.querySelector(section);
     const infoFilmElement = document.createElement("infoFilmElement");
     
@@ -36,6 +40,7 @@ function affichageInfoFilm(section, idMovie){
     boutonFermetureModale.innerText = 'X';
     boutonFermetureModale.style.fontSize = "30px";
     boutonFermetureModale.style.float = 'right';
+    // Create a "button" that will hide the modal
     boutonFermetureModale.onclick = function(){
         const modalSelector = document.querySelector('.Movies__ModalMovie');
         modalSelector.style.visibility = "hidden";
@@ -80,6 +85,7 @@ function affichageInfoFilm(section, idMovie){
     infoFilmElement.appendChild(boutonFermetureModale);
     infoFilmElement.appendChild(imageInfoFilm);
     infoFilmElement.appendChild(nomInfoFilm);
+    // all the if test if there's a value for the information, and do not display it , if not
     if (idMovie.genres){
         infoFilmElement.appendChild(genresInfoFilm);
     };
@@ -112,7 +118,9 @@ function affichageInfoFilm(section, idMovie){
     };
 };
 
+
 function browseListToCreateElement(categorie, source){
+    // When the informations given by the API is a list, browse through that list and extract each value
     const ListConteneur = document.createElement("p");
     ListConteneur.innerText = categorie+' \n';
     if (source.length > 1){
@@ -135,6 +143,7 @@ function browseListToCreateElement(categorie, source){
 }
 
 function listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer){
+    // Calculate and return which page will be needed to get, to later extract each movie informations
     let pageAAjouter= (Math.trunc((premierFilmIDARecuperer-1)/5)+1);
     const nombreDePage  = (Math.trunc((nombreFilmARecuperer-1) / 5) + 1);
     let listeDesPages = [];
@@ -146,12 +155,14 @@ function listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer){
 };
 
 async function recuperationInfoFilm(idFilm){
+    // get the informations for one movie through its id then parse and return it
     const reponse = await fetch('http://localhost:8000/api/v1/titles/'+idFilm.toString());
     let infoFilmParsed = await reponse.json();
     return infoFilmParsed;
 };
 
 async function RecuperationEtStockageDeFilm(methodeDeTri, genre, page){
+    // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
     const indexPage = 'page'+methodeDeTri+genre+page.toString();
     let pagefilms = window.localStorage.getItem("'"+indexPage+"'");
     if(pagefilms === null){
@@ -166,7 +177,7 @@ async function RecuperationEtStockageDeFilm(methodeDeTri, genre, page){
         pagefilms = JSON.parse(pagefilms);
     };
     let positionFilm = (page*5)-4;
-    
+    // create the needed information for each movie of the page and store them 
     for (let film of pagefilms.results) {
         const objetFilm = new infoFilm(positionFilm, film.id, film.title, film.image_url);
         const nomStorage = methodeDeTri+genre+positionFilm.toString();
@@ -197,24 +208,33 @@ async function recuperationFilm(methodeDeTri, genre, premierFilmIDARecuperer, no
     return filmsRecuperes;
 };
 
-function generateButtonInfo (sectionButton, idMovie){
+function generateButtonInfo (divButton, idMovie, divImage){
     let buttonInfo = document.createElement('button');
     buttonInfo.type = 'button';
     buttonInfo.innerHTML = '+';
     buttonInfo.className = 'infoFilm';
-    buttonInfo.onclick = async function(){       
-        const modalSelector = document.querySelector('.Movies__ModalMovie');
+    // When the button is clicked, open a modal with the movie's detailed informations
+    modalOpening(buttonInfo, '.Movies__ModalMovie', '.Movies__ModalMovie__Content', idMovie)
+    // Make the image clickable, and open a modal with the movie's detailed informations
+    modalOpening(divImage, '.Movies__ModalMovie', '.Movies__ModalMovie__Content', idMovie)
+    divButton.appendChild(buttonInfo);
+};
+
+function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
+    // Check if a modal is already opened, if not , open a modal with a movie detailed information
+    elementClicked.onclick = async function(){       
+        const modalSelector = document.querySelector(modalContainer);
         if (modalSelector.style.visibility === "visible"){
             //
         }else{
             modalSelector.style.visibility = "visible";
             const movieInfo = await recuperationInfoFilm(idMovie); 
-            affichageInfoFilm('.Movies__ModalMovie__Content', movieInfo);
+            affichageInfoFilm(modalContent, movieInfo);
         };
             
     };
-    sectionButton.appendChild(buttonInfo);
-};
+}
+
 
 async function generateButtonUpDown (sectionButton, methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage){
     let buttonDown = document.createElement('button');
@@ -267,18 +287,25 @@ async function affichageSectionFilms(sectionButtonArg, methodeDeTriArg, genreArg
     await recuperationStockageEtAffichageFilm(methodeDeTri, genre, indiceDeDepart,nombreFilmARecuperer,sectionPage);
 };
 
-async function bestMovieDisplay(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage, sectionResume){
+async function bestMovieDisplay(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, bestMovieContainer){
     const bestMovieParsed = await recuperationFilm(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer);
-    await afficherFilms(sectionPage, bestMovieParsed[0]);
     const idBestMovie = bestMovieParsed[0].id;
     const infoBestMovie = await recuperationInfoFilm(idBestMovie);
-    const bestMovieResumeContainer = document.querySelector(sectionResume);
+    const bestMovieResumeContainer = document.querySelector(bestMovieContainer+'__MovieInfo__Resume');
     bestMovieResumeContainer.innerText = infoBestMovie.description;
+    const bestMovieTitleContainer = document.querySelector(bestMovieContainer+'__MovieInfo__Title');
+    bestMovieTitleContainer.innerText = infoBestMovie.title;
+    const divButton = document.querySelector(bestMovieContainer+'__MovieInfo__BtnContainer');
+    
+    const bestMovieImageContainer = document.querySelector(bestMovieContainer+'__Image');
+    bestMovieImageContainer.src = infoBestMovie.image_url;
+    generateButtonInfo(divButton, idBestMovie, bestMovieImageContainer);
+
 };
 
 
 
-await bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie__MovieInfo', '.Movies__BestMovie__Resume');
+await bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
 await affichageSectionFilms('.Movies__PopularMovies__Scrolling-Btn', '-imdb_score','', 2, 7, '.Movies__PopularMovies__MoviesList');
 await affichageSectionFilms('.Movies__ActionMovies__Scrolling-Btn', '-imdb_score','action', 1, 7, '.Movies__ActionMovies__MoviesList');
 await affichageSectionFilms('.Movies__RomanticMovies__Scrolling-Btn', '-imdb_score','romance', 1, 7, '.Movies__RomanticMovies__MoviesList');
