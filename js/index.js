@@ -30,6 +30,28 @@ async function afficherFilms(section, film){
     generateButtonInfo(divButton, film.id, imageFilm);
 };
 
+async function afficherFilmsTest(section, film, i){
+    // Select the right div 
+    const sectionFilms = document.querySelector(section+'__Movie'+i);
+    console.log(section, i, sectionFilms);
+    // Create containers that will hold image, title and a button
+    const filmElement = document.createElement("div");
+    filmElement.className = section+'__Movie'+i+'__MovieContainer';
+    const imageFilm = document.createElement("img");
+    imageFilm.src = film.image;
+    const nomFilm = document.createElement("h3");
+    nomFilm.innerText = film.title;
+    nomFilm.className = section+'__MovieName';
+    const divButton = document.createElement("div");
+    divButton.className = film.id.toString()+'-btn';
+    // attach containers to the div
+    sectionFilms.appendChild(filmElement);
+    filmElement.appendChild(imageFilm);
+    filmElement.appendChild(nomFilm);
+    filmElement.appendChild(divButton);
+    generateButtonInfo(divButton, film.id, imageFilm);
+};
+
 function affichageInfoFilm(section, idMovie){
     // Create a modal that will display detailed informations on a movie
     const sectionInfoFilm = document.querySelector(section);
@@ -192,7 +214,6 @@ async function RecuperationEtStockageDeFilm(methodeDeTri, genre, page){
 async function recuperationFilm(methodeDeTri, genre, premierFilmIDARecuperer, nombreFilmARecuperer){
     const listeDesPages = listeDesPagesaParcourir(premierFilmIDARecuperer, nombreFilmARecuperer);
     let filmsRecuperes = [];
-    let listeDesFilms = [];
     // parcours toutes les pages de résultat
     for (let page of listeDesPages) {
         // Récupère la page et la stock
@@ -269,10 +290,63 @@ async function generateButtonUpDown (sectionButton, methodeDeTri, genre, indiceD
     container.appendChild(buttonUp);
 };
 
+async function functionButtonUpDown (methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage){
+    let buttonDown = document.getElementById(sectionPage+'__Movie1__Previous');
+    console.log(buttonDown);
+    buttonDown.onclick = function(){          
+        indiceDeDepart -=7;
+        for(let k = 1; k<=7; k++){
+            document.querySelector('.'+sectionPage+'__Movie'+k).innerHTML= "";
+        };
+        createUpDownButton(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage); 
+        recuperationStockageEtAffichageFilmTest(methodeDeTri,genre,indiceDeDepart,nombreFilmARecuperer, sectionPage);
+    };
+    let buttonUp = document.getElementById(sectionPage+'__Movie7__Next');
+    buttonUp.onclick = async function(){          
+        indiceDeDepart +=7;
+        for(let k = 1; k<=7; k++){
+            console.log('.'+sectionPage+'__Movie'+k+'__MovieContainer');
+            document.querySelector('.'+sectionPage+'__Movie'+k).innerHTML= "";
+        };
+        createUpDownButton(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage); 
+        await recuperationStockageEtAffichageFilmTest(methodeDeTri,genre,indiceDeDepart,nombreFilmARecuperer, sectionPage);
+    };
+    
+};
+
+function createUpDownButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+    const movie1Container = document.querySelector('.'+divSelected+'__Movie1');
+    let divButtonDown = document.createElement("div");
+    divButtonDown.className = "Movies__Slider__Previous";
+    divButtonDown.id = divSelected+"__Movie1__Previous";
+    divButtonDown.innerText = '<';
+    divButtonDown.style.visibility = 'hidden';
+    movie1Container.appendChild(divButtonDown);
+    const movie7Container = document.querySelector('.'+divSelected+'__Movie7');
+    let divButtonUp = document.createElement("div");
+    divButtonUp.className = "Movies__Slider__Next";
+    divButtonUp.id = divSelected+"__Movie7__Next";
+    divButtonUp.innerText = '>';
+    movie7Container.appendChild(divButtonUp);
+    if (startingPosition >7){
+        divButtonDown.style.visibility = 'visible';
+    };
+    functionButtonUpDown(sortingMethod, genre, startingPosition, numberOfMovies, divSelected);
+}
+
 async function recuperationStockageEtAffichageFilm(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage){
     let filmRecup = await recuperationFilm(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer);
     for (let film of filmRecup){
         await afficherFilms(sectionPage, film);
+    };
+};
+
+async function recuperationStockageEtAffichageFilmTest(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage){
+    let i = 1;
+    let filmRecup = await recuperationFilm(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer);
+    for (let film of filmRecup){
+        await afficherFilmsTest('.'+sectionPage, film, i);
+        i++;
     };
 };
 
@@ -285,6 +359,12 @@ async function affichageSectionFilms(sectionButtonArg, methodeDeTriArg, genreArg
     let genre=genreArg
     await generateButtonUpDown(sectionButton, methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, sectionPage);
     await recuperationStockageEtAffichageFilm(methodeDeTri, genre, indiceDeDepart,nombreFilmARecuperer,sectionPage);
+};
+
+function affichageSectionFilmsTest(methodeDeTri, genre,indiceDeDepartArg, nombreFilmARecuperer, sectionPage){
+    var indiceDeDepart = indiceDeDepartArg;
+    recuperationStockageEtAffichageFilmTest(methodeDeTri, genre, indiceDeDepart,nombreFilmARecuperer, sectionPage);
+    functionButtonUpDown(methodeDeTri,genre,indiceDeDepart,nombreFilmARecuperer,sectionPage);
 };
 
 async function bestMovieDisplay(methodeDeTri, genre, indiceDeDepart, nombreFilmARecuperer, bestMovieContainer){
@@ -305,8 +385,9 @@ async function bestMovieDisplay(methodeDeTri, genre, indiceDeDepart, nombreFilmA
 
 
 
-await bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
-await affichageSectionFilms('.Movies__PopularMovies__Scrolling-Btn', '-imdb_score','', 2, 7, '.Movies__PopularMovies__MoviesList');
-await affichageSectionFilms('.Movies__ActionMovies__Scrolling-Btn', '-imdb_score','action', 1, 7, '.Movies__ActionMovies__MoviesList');
-await affichageSectionFilms('.Movies__RomanticMovies__Scrolling-Btn', '-imdb_score','romance', 1, 7, '.Movies__RomanticMovies__MoviesList');
-await affichageSectionFilms('.Movies__Comedies__Scrolling-Btn', '-imdb_score','comedy', 1, 7, '.Movies__Comedies__MoviesList');
+bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
+affichageSectionFilmsTest('-imdb_score','', 2, 7, 'Movies__PopularMoviesTest__Slider');
+affichageSectionFilms('.Movies__PopularMovies__Scrolling-Btn', '-imdb_score','', 2, 7, '.Movies__PopularMovies__MoviesList');
+affichageSectionFilms('.Movies__ActionMovies__Scrolling-Btn', '-imdb_score','action', 1, 7, '.Movies__ActionMovies__MoviesList');
+affichageSectionFilms('.Movies__RomanticMovies__Scrolling-Btn', '-imdb_score','romance', 1, 7, '.Movies__RomanticMovies__MoviesList');
+affichageSectionFilms('.Movies__Comedies__Scrolling-Btn', '-imdb_score','comedy', 1, 7, '.Movies__Comedies__MoviesList');

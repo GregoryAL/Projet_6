@@ -38,7 +38,7 @@ img{
   cursor:pointer;
 }
 
-.Movies__PopularMovies__MoviesList, .Movies__ActionMovies__MoviesList, .Movies__RomanticMovies__MoviesList, .Movies__Comedies__MoviesList{
+.Movies__PopularMovies__MoviesList, .Movies__ActionMovies__MoviesList, .Movies__RomanticMovies__MoviesList, .Movies__Comedies__MoviesList, .Movies__PopularMoviesTest__Slider{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
@@ -50,10 +50,9 @@ img{
 .btn-class-up{
   margin-left: auto;
 }
-.Movies__BestMovie{
+.Movies__BestMovie, .Movies__PopularMoviesTest__Slider__Movie1, .Movies__PopularMoviesTest__Slider__Movie7{
   display: flex;
-  background-color: black;
-  color:white;
+
 }
 .Movies__BestMovie__Image{
   max-height:100%;
@@ -61,3 +60,26 @@ img{
   margin-left: auto;
   z-index: 0;
 }
+.Movies__Slider__Previous, .Movies__Slider__Next{
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  position: absolute;
+  font-size: 100px;
+  color: rgba(220, 220, 220, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+}
+.Movies__Slider__Previous{
+  left: 0;
+  bottom: 35%;
+  visibility: hidden;
+}
+.Movies__Slider__Next{
+  right: 0;
+  bottom: 35%;
+}
+.Movies__Slider__Previous:hover, .Movies__Slider__Next:hover{
+  opacity: 1;
+}
+
