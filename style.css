@@ -38,20 +38,17 @@ img{
   cursor:pointer;
 }
 
-.Movies__PopularMovies__MoviesList, .Movies__ActionMovies__MoviesList, .Movies__RomanticMovies__MoviesList, .Movies__Comedies__MoviesList, .Movies__PopularMoviesTest__Slider{
+.Movies__ActionMovies__Slider, .Movies__RomanticMovies__Slider, .Movies__Comedies__Slider, .Movies__PopularMovies__Slider{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
 }
-.Movies__PopularMovies__Scrolling-Btn, .Movies__ActionMovies__Scrolling-Btn, .Movies__RomanticMovies__Scrolling-Btn, .Movies__Comedies__Scrolling-Btn{
-  display: flex;
-  justify-content: space-between;
-}
 .btn-class-up{
   margin-left: auto;
 }
-.Movies__BestMovie, .Movies__PopularMoviesTest__Slider__Movie1, .Movies__PopularMoviesTest__Slider__Movie7{
+.Movies__BestMovie, .Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7{
   display: flex;
+  position: relative;
 
 }
 .Movies__BestMovie__Image{
@@ -69,15 +66,16 @@ img{
   color: rgba(220, 220, 220, 0.8);
   background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
+  
 }
 .Movies__Slider__Previous{
   left: 0;
-  bottom: 35%;
+  top: 15%;
   visibility: hidden;
 }
 .Movies__Slider__Next{
   right: 0;
-  bottom: 35%;
+  top: 15%;
 }
 .Movies__Slider__Previous:hover, .Movies__Slider__Next:hover{
   opacity: 1;

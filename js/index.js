@@ -51,7 +51,7 @@ async function createMovieDivTest(divSelected, film, i){
     generateButtonInfo(divButton, film.id, movieImage);
 };
 
-function affichageInfoFilm(divSelected, idMovie){
+function CreateDisplayModal(divSelected, idMovie){
     // Create a modal that will display detailed informations on a movie
     const divSelectedInfoFilm = document.querySelector(divSelected);
     const infoElementDiv = document.createElement("infoElementDiv");
@@ -163,7 +163,7 @@ function browseListToCreateElement(categorie, source){
     return ListConteneur;
 }
 
-function PagesListaParcourir(firstMovieID, numberOfMovies){
+function pagesToBrowse(firstMovieID, numberOfMovies){
     // Calculate and return which page will be needed to get, to later extract each movie informations
     let pageToAdd= (Math.trunc((firstMovieID-1)/5)+1);
     const numberOfPages  = (Math.trunc((numberOfMovies-1) / 5) + 1);
@@ -175,14 +175,14 @@ function PagesListaParcourir(firstMovieID, numberOfMovies){
     return PagesList;
 };
 
-async function recuperationInfoFilm(idFilm){
+async function getMovieInfoAndReturnItParsed(idFilm){
     // get the informations for one movie through its id then parse and return it
     const reponse = await fetch('http://localhost:8000/api/v1/titles/'+idFilm.toString());
     let infoFilmParsed = await reponse.json();
     return infoFilmParsed;
 };
 
-async function RecuperationEtStockageDeFilm(sortingMethod, genre, page){
+async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
     // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
     const indexPage = 'page'+sortingMethod+genre+page.toString();
     let moviesPage = window.localStorage.getItem("'"+indexPage+"'");
@@ -207,13 +207,13 @@ async function RecuperationEtStockageDeFilm(sortingMethod, genre, page){
 };
 
 
-async function recuperationFilm(sortingMethod, genre, firstMovieID, numberOfMovies){
-    const PagesList = PagesListaParcourir(firstMovieID, numberOfMovies);
+async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, numberOfMovies){
+    const PagesList = pagesToBrowse(firstMovieID, numberOfMovies);
     let moviesToDisplayList = [];
     // parcours toutes les pages de résultat
     for (let page of PagesList) {
         // Récupère la page et la stock
-        await RecuperationEtStockageDeFilm(sortingMethod, genre, page);
+        await getMoviesAndStockThemParsed(sortingMethod, genre, page);
     };
     let filmID = firstMovieID;
     for(let i=0; i<numberOfMovies; i++){
@@ -245,15 +245,15 @@ function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
             //
         }else{
             modalSelector.style.visibility = "visible";
-            const movieInfo = await recuperationInfoFilm(idMovie); 
-            affichageInfoFilm(modalContent, movieInfo);
+            const movieInfo = await getMovieInfoAndReturnItParsed(idMovie); 
+            CreateDisplayModal(modalContent, movieInfo);
         };
             
     };
 }
 
 
-async function generateButtonUpDown (divSelectedButton, sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+async function generateButtonUpDown(divSelectedButton, sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
     let buttonDown = document.createElement('button');
     buttonDown.type = 'button';
     buttonDown.innerHTML = 'Films Précédents';
@@ -266,7 +266,7 @@ async function generateButtonUpDown (divSelectedButton, sortingMethod, genre, st
             buttonDown.hidden = true;
         }
         document.querySelector(divSelected).innerHTML= "";
-        await recuperationStockageEtAffichageFilm(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
+        await gettingMoviesInfoAndDisplay(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
         };
     let buttonUp = document.createElement('button');
     buttonUp.type = 'button';
@@ -279,16 +279,16 @@ async function generateButtonUpDown (divSelectedButton, sortingMethod, genre, st
             buttonDown.hidden = false;
         };
         document.querySelector(divSelected).innerHTML= "";
-        await recuperationStockageEtAffichageFilm(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
+        await gettingMoviesInfoAndDisplay(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
         };
     let container = document.querySelector(divSelectedButton);
     container.appendChild(buttonDown);
     container.appendChild(buttonUp);
 };
 
-async function functionButtonUpDown (sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+async function functionButtonUpDown(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+    console.log(startingPosition);
     let buttonDown = document.getElementById(divSelected+'__Movie1__Previous');
-    console.log(buttonDown);
     buttonDown.onclick = function(){          
         startingPosition -=7;
         for(let k = 1; k<=7; k++){
@@ -301,7 +301,6 @@ async function functionButtonUpDown (sortingMethod, genre, startingPosition, num
     buttonUp.onclick = async function(){          
         startingPosition +=7;
         for(let k = 1; k<=7; k++){
-            console.log('.'+divSelected+'__Movie'+k+'__MovieContainer');
             document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
         };
         createUpDownButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
@@ -330,17 +329,16 @@ function createUpDownButton(sortingMethod, genre, startingPosition, numberOfMovi
     functionButtonUpDown(sortingMethod, genre, startingPosition, numberOfMovies, divSelected);
 }
 
-async function recuperationStockageEtAffichageFilm(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
-    let movieToDisplay = await recuperationFilm(sortingMethod, genre, startingPosition, numberOfMovies);
+async function gettingMoviesInfoAndDisplay(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+    let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
     for (let film of movieToDisplay){
         await createMovieDiv(divSelected, film);
     };
 };
 
-async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositionArg, numberOfMovies, divSelected){
+async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
     let i = 1;
-    var startingPosition = startingPositionArg;
-    let movieToDisplay = await recuperationFilm(sortingMethod, genre, startingPosition, numberOfMovies);
+    let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
     for (let film of movieToDisplay){
         await createMovieDivTest('.'+divSelected, film, i);
         i++;
@@ -348,7 +346,7 @@ async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositi
     functionButtonUpDown(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
 };
 
-async function affichagemoviesDiv(divSelectedButtonArg, sortingMethodArg, genreArg,startingPositionArg, numberOfMoviesArg, divSelectedArg){
+async function displayMoviesInADiv(divSelectedButtonArg, sortingMethodArg, genreArg,startingPositionArg, numberOfMoviesArg, divSelectedArg){
     let sortingMethod = sortingMethodArg;
     var startingPosition = startingPositionArg;
     let numberOfMovies = numberOfMoviesArg;
@@ -356,14 +354,14 @@ async function affichagemoviesDiv(divSelectedButtonArg, sortingMethodArg, genreA
     let divSelectedButton = divSelectedButtonArg;
     let genre=genreArg
     await generateButtonUpDown(divSelectedButton, sortingMethod, genre, startingPosition, numberOfMovies, divSelected);
-    await recuperationStockageEtAffichageFilm(sortingMethod, genre, startingPosition,numberOfMovies,divSelected);
+    await gettingMoviesInfoAndDisplay(sortingMethod, genre, startingPosition,numberOfMovies,divSelected);
 };
 
 
 async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOfMovies, bestMovieContainer){
-    const bestMovieParsed = await recuperationFilm(sortingMethod, genre, startingPosition, numberOfMovies);
+    const bestMovieParsed = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
     const idBestMovie = bestMovieParsed[0].id;
-    const infoBestMovie = await recuperationInfoFilm(idBestMovie);
+    const infoBestMovie = await getMovieInfoAndReturnItParsed(idBestMovie);
     const bestMovieResumeContainer = document.querySelector(bestMovieContainer+'__MovieInfo__Resume');
     bestMovieResumeContainer.innerText = infoBestMovie.description;
     const bestMovieTitleContainer = document.querySelector(bestMovieContainer+'__MovieInfo__Title');
@@ -379,8 +377,7 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
 
 
 bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
-generateAndDisplayDivsMovies('-imdb_score','', 2, 7, 'Movies__PopularMoviesTest__Slider');
-affichagemoviesDiv('.Movies__PopularMovies__Scrolling-Btn', '-imdb_score','', 2, 7, '.Movies__PopularMovies__MoviesList');
-affichagemoviesDiv('.Movies__ActionMovies__Scrolling-Btn', '-imdb_score','action', 1, 7, '.Movies__ActionMovies__MoviesList');
-affichagemoviesDiv('.Movies__RomanticMovies__Scrolling-Btn', '-imdb_score','romance', 1, 7, '.Movies__RomanticMovies__MoviesList');
-affichagemoviesDiv('.Movies__Comedies__Scrolling-Btn', '-imdb_score','comedy', 1, 7, '.Movies__Comedies__MoviesList');
+generateAndDisplayDivsMovies('-imdb_score','', 2, 7, 'Movies__PopularMovies__Slider');
+generateAndDisplayDivsMovies('-imdb_score','action', 1, 7, 'Movies__ActionMovies__Slider');
+generateAndDisplayDivsMovies('-imdb_score','romance', 1, 7, 'Movies__RomanticMovies__Slider');
+generateAndDisplayDivsMovies('-imdb_score','comedy', 1, 7, 'Movies__Comedies__Slider');
