@@ -52,10 +52,11 @@ img{
 
 }
 .Movies__BestMovie__Image{
-  max-height:100%;
-  height:auto;
+  max-height:120%;
   margin-left: auto;
-  z-index: 0;
+  position:absolute;
+  right:50%;
+  cursor:default;
 }
 .Movies__Slider__Previous, .Movies__Slider__Next{
   cursor: pointer;
