@@ -9,7 +9,7 @@ class infoFilm {
 
 };
 
-async function createMovieDiv(divSelected, film, i){
+function createMovieDiv(divSelected, film, i){
     // Select the right div 
     const moviesDiv = document.querySelector(divSelected+'__Movie'+i);
     // Create containers that will hold image, title and a button
@@ -220,7 +220,7 @@ async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, 
 function generateButtonInfo (divButton, idMovie, divImage){
     let buttonInfo = document.createElement('button');
     buttonInfo.type = 'button';
-    buttonInfo.innerHTML = '+';
+    buttonInfo.innerHTML = "Plus d'information";
     buttonInfo.className = 'infoFilm';
     // When the button is clicked, open a modal with the movie's detailed informations
     modalOpening(buttonInfo, '.Movies__ModalMovie', '.Movies__ModalMovie__Content', idMovie)
@@ -336,7 +336,10 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
 
 };
 
-
+const AccueilButton = document.querySelector('.Header__Menu__Accueil');
+AccueilButton.onclick = function(){
+    window.location.reload(true);
+}
 // Generation the best movie display
 bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
 // Generate the 4 differents categories display

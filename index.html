@@ -7,19 +7,29 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<header>
-			<h1>JustStreamIt</h1>
+		<header class="Header">
+			<div class="Header__Title">
+				<h1>JustStreamIt</h1>
+				<img class="Header__Title__LogoImg" src="img/16004298163529_P5.png">
+			</div>
+			<div class="Header__Menu">
+				<div class="Header__Menu__Accueil">Accueil</div>
+				<div class="Header__Menu__Categories">Catégories</div>
+			</div>
 		</header>
 		<main>
 			<section class="Movies">
 				<div class="Movies__BestMovie" id="Movies__BestMovie">
+					<div class="Movies__BestMovie__ImageContainer">
+						<img class="Movies__BestMovie__Image">
+					</div>
 					<div class="Movies__BestMovie__MovieInfo">
 						<h2>Meilleur Film</h2>
 						<p class="Movies__BestMovie__MovieInfo__Title"></p>
 						<div class="Movies__BestMovie__MovieInfo__BtnContainer"></div>
 						<p class="Movies__BestMovie__MovieInfo__Resume"></p>
+						
 					</div>
-					<img class="Movies__BestMovie__Image">
 				</div>
 				<div class="Movies__PopularMovies">
 					<h2>Films les mieux notés :</h2>
