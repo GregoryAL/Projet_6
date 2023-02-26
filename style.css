@@ -5,7 +5,7 @@
   visibility: hidden;
   transition: all 0.3s ease;
   border-radius: 10px;
-  top: 5%;
+  top: 5em;
   left: 5%;
   right: 5%;
   bottom: 5%;
@@ -24,7 +24,7 @@
   overflow-y: auto;
   color: white;
 }
-.buttonModaleX:hover{
+.buttonModaleX:hover, .Header__Menu__Accueil:hover, .Header__Menu__Categories:hover, .Header__Menu__Categories__List_Item:hover{
   font-weight: bold;
   cursor:pointer;
 
@@ -58,17 +58,30 @@ img{
 .Header__Title, .Header__Menu{
   display: inline-flex;
 }
-.Header__Menu__Accueil, .Header__Menu__Categories{
-  cursor: pointer;
-}
 .Header__Title__LogoImg{
   object-fit: contain;
+}
+#Header__Menu__Categories__List{
+  visibility: hidden;
+  overflow-y: scroll;
+  height: 20em;
+  top:3.4em;
+  right:1.2em;
+  position: absolute;
+}
+.Header__Menu__Categories__List_Item{
+  background-color: darkslategray;
+  list-style: none;
+  position: relative;
 }
 .Movies{
   position: relative;
   top:5em
 }
-.Movies__ActionMovies__Slider, .Movies__RomanticMovies__Slider, .Movies__Comedies__Slider, .Movies__PopularMovies__Slider{
+.Movies__Selectedgenre{
+  visibility: hidden;
+}
+.Movies__ActionMovies__Slider, .Movies__RomanticMovies__Slider, .Movies__Comedies__Slider, .Movies__PopularMovies__Slider, .Movies__Selectedgenre__Slider{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
@@ -77,11 +90,11 @@ img{
 .btn-class-up{
   margin-left: auto;
 }
-.Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7{
+.Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7, .Movies__Selectedgenre__Slider__Movie1, .Movies__Selectedgenre__Slider__Movie7{
   display: flex;
   position: relative;
 }
-.Movies__BestMovie, .Movies__PopularMovies, .Movies__ActionMovies, .Movies__RomanticMovies, .Movies__Comedies{
+.Movies__BestMovie, .Movies__PopularMovies, .Movies__ActionMovies, .Movies__RomanticMovies, .Movies__Comedies, .Movies__Selectedgenre{
   border: 2px solid white;
   border-radius: 10px;
 }

@@ -335,11 +335,76 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
     generateButtonInfo(divButton, idBestMovie, bestMovieImageContainer);
 
 };
-
-const AccueilButton = document.querySelector('.Header__Menu__Accueil');
-AccueilButton.onclick = function(){
+function accueilButtonListened(selectedDiv){
+    // Listen for a click on Accueil button
+    const accueilButton = document.querySelector(selectedDiv);
+    accueilButton.addEventListener('click', reloadPage);
+};
+function categoriesButtonListened(categorieDiv){
+    // Listen for a click on Categories Button
+    const categoriesButton = document.querySelector(categorieDiv);
+    categoriesButton.addEventListener('click', displayCategoriesMenu);
+};
+function reloadPage(){
+    // get back on top
+    document.body.scrollIntoView();
+    // reload page
     window.location.reload(true);
-}
+};
+function displayCategoriesMenu(){
+    // Display or hide all the categories available
+    if (document.getElementById('Header__Menu__Categories__List').style.visibility === 'visible'){
+        document.getElementById('Header__Menu__Categories__List').style.visibility = 'hidden';
+    }else{
+        document.getElementById('Header__Menu__Categories__List').style.visibility = 'visible';
+        // add an event listener on the click of a single categorie
+        singleCategorieButtonListened();
+    };
+};
+function singleCategorieButtonListened(){
+    document.getElementById('Header__Menu__Categories__List').addEventListener('click', function(categorie){
+        if(categorie.target && categorie.target.nodeName == "LI") {
+            console.log(categorie.target.id + " was clicked");
+            categorieSelection(categorie.target.id);
+        };
+    //categorieButton.addEventListener('click', categorieSelection(categorieButton));
+    });
+};
+
+function categorieSelection(categoryIdClicked){
+    const categoryClicked = categoryIdClicked.replace('Header__Menu__Categories__List__', '');
+    console.log(categoryClicked);
+    const nomCategorie = document.getElementById(categoryIdClicked).innerText;
+    console.log(nomCategorie)
+    // dois ajouter && categoerie != display
+    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible'){
+        //
+    }else{
+        document.getElementById('Header__Menu__Categories__List').style.visibility='hidden';
+        document.querySelector('.Movies__BestMovie').style.visibility='hidden';
+        document.querySelector('.Movies__PopularMovies').style.visibility='hidden';
+        document.querySelector('.Movies__ActionMovies').style.visibility='hidden';
+        document.querySelector('.Movies__RomanticMovies').style.visibility='hidden';
+        document.querySelector('.Movies__Comedies').style.visibility='hidden';
+        document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
+        document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+nomCategorie+' les mieux notés :';
+        generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, 'Movies__Selectedgenre__Slider');
+    };
+};
+
+/*const categorieButton = document.querySelector('.Header__Menu__Categories');
+categorieButton.onclick = function(){
+    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible'){
+        //
+    }else{
+        document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
+        generateAndDisplayDivsMovies('-imdb_score','crime', 1, 7, 'Movies__Selectedgenre__Slider');
+    }
+*/
+// Listen to a click on Accueil Button and reload the page if clicked
+accueilButtonListened('.Header__Menu__Accueil');
+// Listen to a click on Categories Button and Display the categories if clicked
+categoriesButtonListened('.Header__Menu__Categories')
 // Generation the best movie display
 bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
 // Generate the 4 differents categories display
