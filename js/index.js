@@ -17,6 +17,11 @@ async function createMovieDiv(divSelected, film, i){
     elementDiv.className = divSelected+'__Movie'+i+'__MovieContainer';
     const movieImage = document.createElement("img");
     movieImage.src = film.image;
+    // Will display a default image if image url doesnt work
+    movieImage.onerror = function(){
+        this.onerror=null;
+        this.src='img/default_image.jpg';
+    }
     const movieName = document.createElement("h3");
     movieName.innerText = film.title;
     movieName.className = divSelected+'__MovieName';
@@ -51,6 +56,11 @@ function CreateDisplayModal(divSelected, idMovie){
 
     const movieImageElement = document.createElement("img");
     movieImageElement.src = idMovie.image_url;
+    // Will display a default image if image url doesnt work
+    movieImageElement.onerror = function(){
+        this.onerror=null;
+        this.src='img/default_image.jpg';
+    }
     
     const movieNameElement = document.createElement("h2");
     movieNameElement.innerText = idMovie.title;
@@ -187,6 +197,7 @@ async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
 };
 
 
+
 async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, numberOfMovies){
     const PagesList = pagesToBrowse(firstMovieID, numberOfMovies);
     let moviesToDisplayList = [];
@@ -315,6 +326,11 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
     
     const bestMovieImageContainer = document.querySelector(bestMovieContainer+'__Image');
     bestMovieImageContainer.src = infoBestMovie.image_url;
+    // Will display a default image if image url doesnt work
+    bestMovieImageContainer.onerror = function(){
+        this.onerror=null;
+        this.src='img/default_image.jpg';
+    }
     // Generate a button to open the modal that will display detailed information page
     generateButtonInfo(divButton, idBestMovie, bestMovieImageContainer);
 
