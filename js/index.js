@@ -55,6 +55,7 @@ function CreateDisplayModal(divSelected, idMovie){
 
     const movieImageElement = document.createElement("img");
     movieImageElement.src = idMovie.image_url;
+    movieImageElement.style.cursor = 'default';
     // Will display a default image if image url doesnt work
     movieImageElement.onerror = function(){
         this.src='img/default_image.jpg';
@@ -190,7 +191,7 @@ function createMovieObjectAndStoreThem( moviesPage, moviePosition, sortingMethod
         };
         moviePosition++;
     };
-}
+};
 
 async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
     const moviesPage = await getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page);
@@ -221,11 +222,11 @@ async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, 
     return moviesToDisplayList;
 };
 
-function generateButtonInfo (divButton, idMovie, divImage){
+function generateButtonInfo (divButton, idMovie){
     let buttonInfo = document.createElement('button');
     buttonInfo.type = 'button';
     buttonInfo.innerHTML = "Plus d'information";
-    buttonInfo.className = 'infoFilm';
+    buttonInfo.className = 'ButtoninfoFilm';
     // When the button is clicked, open a modal with the movie's detailed informations
     modalOpening(buttonInfo, '.Movies__ModalMovie', '.Movies__ModalMovie__Content', idMovie)
     divButton.appendChild(buttonInfo);
@@ -251,6 +252,17 @@ function popMovieFromStorage(moviePosition, genre, sortingMethod){
     localStorage.removeItem(storageNameToPop)
 }
 
+function clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies) {
+    // Erase the categorie s grid content
+    for(let k = 1; k<=7; k++){
+        document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
+        console.log('.'+divSelected+'__Movie'+k, document.querySelector('.'+divSelected+'__Movie'+k).innerHTML);
+        
+    };
+    // Recreate the buttons
+    createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
+}
+
 function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
     // Assign function to both arrow left and right
     // Focus on the Previous button div
@@ -258,15 +270,11 @@ function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberO
     buttonDown.onclick = function(){
         // Change the starting position to display the previous 7 movies          
         startingPosition -=7;
-        // Erase the categorie s grid content
-        for(let k = 1; k<=7; k++){
-            document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
-            
-        };
-        // Recreate the buttons
-        createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
+        // Remove information from the slider grid
+        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
         // Display the previous 7 movies
         generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        // manage localStorage by removing unused entries
         for (let i=1; i<=7; i++){
             popMovieFromStorage(startingPosition+(i+6), genre, sortingMethod);
         };
@@ -277,14 +285,11 @@ function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberO
     buttonUp.onclick = async function(){  
         // change the starting position to display the previous 7 movies         
         startingPosition +=7;
-        // Erase the categorie s grid content
-        for(let k = 1; k<=7; k++){
-            document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
-        };
-        // Recreate the buttons
-        createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
+        // Remove information from the slider grid
+        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
         // Display the next 7 movies
         generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        // manage localStorage by removing unused entries
         for (let i=1; i<=7; i++){
             popMovieFromStorage(startingPosition-(i+6), genre, sortingMethod);
         };
@@ -349,7 +354,7 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
         this.src='img/default_image.jpg';
     }
     // Generate a button to open the modal that will display detailed information page
-    generateButtonInfo(divButton, idBestMovie, bestMovieImageContainer);
+    generateButtonInfo(divButton, idBestMovie);
 
 };
 function accueilButtonListened(selectedDiv){
@@ -376,8 +381,6 @@ function displayCategoriesMenu(){
         document.getElementById('Header__Menu__Categories__List').style.visibility = 'hidden';
     }else{
         document.getElementById('Header__Menu__Categories__List').style.visibility = 'visible';
-        // add an event listener on the click of a single categorie
-        singleCategorieButtonListened();
     };
 };
 function singleCategorieButtonListened(){
@@ -391,16 +394,18 @@ function singleCategorieButtonListened(){
 
 function categorieSelection(categoryIdClicked){
     const categoryClicked = categoryIdClicked.replace('Header__Menu__Categories__List__', '');
-    console.log(categoryClicked);
+    console.log('category ',categoryClicked);
     const categorieName = document.getElementById(categoryIdClicked).innerText;
-    console.log(categorieName);
+    console.log('categorie ', categorieName);
     let categorieAlreadySelected = document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText
     categorieAlreadySelected = categorieAlreadySelected.replace('Films catégorie ', '').replace(' les mieux notés :', '');
-    console.log(categorieAlreadySelected);
-    // dois ajouter && categoerie != display
+    console.log('previous cat', categorieAlreadySelected);
+    const divSelected = 'Movies__Selectedgenre__Slider'
+    
     if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible' && categorieName === categorieAlreadySelected){
         //
     }else{
+        clearSlidersView(divSelected, '-imdb_score', categoryClicked, 1, 7);
         document.getElementById('Header__Menu__Categories__List').style.visibility='hidden';
         document.querySelector('.Movies__BestMovie').style.visibility='hidden';
         document.querySelector('.Movies__PopularMovies').style.visibility='hidden';
@@ -409,16 +414,17 @@ function categorieSelection(categoryIdClicked){
         document.querySelector('.Movies__Comedies').style.visibility='hidden';
         document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
         document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+categorieName+' les mieux notés :';
-        generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, 'Movies__Selectedgenre__Slider');
+        generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, divSelected);
     };
         
 };
 
-var movieStoredNameList = [];
 // Listen to a click on Accueil Button and reload the page if clicked
 accueilButtonListened('.Header__Menu__Accueil');
 // Listen to a click on Categories Button and Display the categories if clicked
 categoriesButtonListened('.Header__Menu__Categories')
+// add an event listener on the click of a single categorie
+singleCategorieButtonListened();
 // Generation the best movie display
 bestMovieDisplay('-imdb_score', '', 1, 1, '.Movies__BestMovie');
 // Generate the 4 differents categories display

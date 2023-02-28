@@ -130,4 +130,14 @@ img{
 .Movies__Slider__Previous:hover, .Movies__Slider__Next:hover{
   opacity: 1;
 }
-
+.ButtoninfoFilm{
+  background-color: red;
+  color: white;
+  font-size: large;
+  border: 1px solid white;
+  border-radius: 3px;
+}
+.ButtoninfoFilm:hover{
+  font-weight: bold;
+  cursor:pointer;
+}
