@@ -19,7 +19,6 @@ function createMovieDiv(divSelected, film, i){
     movieImage.src = film.image;
     // Will display a default image if image url doesnt work
     movieImage.onerror = function(){
-        this.onerror=null;
         this.src='img/default_image.jpg';
     }
     const movieName = document.createElement("h3");
@@ -58,7 +57,6 @@ function CreateDisplayModal(divSelected, idMovie){
     movieImageElement.src = idMovie.image_url;
     // Will display a default image if image url doesnt work
     movieImageElement.onerror = function(){
-        this.onerror=null;
         this.src='img/default_image.jpg';
     }
     
@@ -172,30 +170,35 @@ async function getMovieInfoAndReturnItParsed(idFilm){
     return infoFilmParsed;
 };
 
-async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
+async function getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page){
     // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
     const indexPage = 'page'+sortingMethod+genre+page.toString();
-    let moviesPage = window.localStorage.getItem("'"+indexPage+"'");
-    if(moviesPage === null){
-        const reponse = await fetch('http://localhost:8000/api/v1/titles/?genre='+genre+'&page='+page.toString()+'&sort_by='+sortingMethod);
-        moviesPage = await reponse.json();
-        const movieStringified = JSON.stringify(moviesPage);
-        window.localStorage.setItem("'"+indexPage+"'", movieStringified);
-    }else{
-        moviesPage = JSON.parse(moviesPage);
-    };
-    let moviePosition = (page*5)-4;
-    // create the needed information for each movie of the page and store them 
-    for (let film of moviesPage.results) {
-        const movieObject = new infoFilm(moviePosition, film.id, film.title, film.image_url);
-        const storageName = sortingMethod+genre+moviePosition.toString();
-        const movieObjectStringified = JSON.stringify(movieObject);
-        window.localStorage.setItem(storageName, movieObjectStringified);
-        moviePosition++;
-    };
-    
+    const reponse = await fetch('http://localhost:8000/api/v1/titles/?genre='+genre+'&page='+page.toString()+'&sort_by='+sortingMethod);
+    const moviesPage = await reponse.json();
+    return moviesPage;
 };
 
+function createMovieObjectAndStoreThem( moviesPage, moviePosition, sortingMethod, genre){
+    // create the needed information for each movie of the page and store them 
+    for (let movie of moviesPage.results) {
+        const movieObject = new infoFilm(moviePosition, movie.id, movie.title, movie.image_url);
+        const storageName = sortingMethod+genre+moviePosition.toString();
+        let movieInStock = localStorage.getItem(storageName);
+        if (movieInStock === null){
+            const movieObjectStringified = JSON.stringify(movieObject);
+            localStorage.setItem(storageName, movieObjectStringified);
+        };
+        moviePosition++;
+    };
+}
+
+async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
+    const moviesPage = await getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page);
+    let moviePosition = (page*5)-4;
+    // create the needed information for each movie of the page and store them 
+    createMovieObjectAndStoreThem(moviesPage, moviePosition, sortingMethod, genre);
+    
+};
 
 
 async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, numberOfMovies){
@@ -208,9 +211,10 @@ async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, 
     };
     let filmID = firstMovieID;
     for(let i=0; i<numberOfMovies; i++){
+        
         // Get all the movies needed and stock them
         const indexFilm = sortingMethod+genre+filmID.toString();
-        const film = JSON.parse(window.localStorage.getItem(indexFilm));
+        const film = JSON.parse(localStorage.getItem(indexFilm));
         moviesToDisplayList.push(film);
         filmID++;
     }    
@@ -240,9 +244,14 @@ function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
         };
             
     };
+};
+
+function popMovieFromStorage(moviePosition, genre, sortingMethod){
+    const storageNameToPop = sortingMethod+genre+moviePosition.toString();
+    localStorage.removeItem(storageNameToPop)
 }
 
-async function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
     // Assign function to both arrow left and right
     // Focus on the Previous button div
     let buttonDown = document.getElementById(divSelected+'__Movie1__Previous');
@@ -252,11 +261,16 @@ async function functionButtonLeftRight(sortingMethod, genre, startingPosition, n
         // Erase the categorie s grid content
         for(let k = 1; k<=7; k++){
             document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
+            
         };
         // Recreate the buttons
         createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
         // Display the previous 7 movies
         generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        for (let i=1; i<=7; i++){
+            popMovieFromStorage(startingPosition+(i+6), genre, sortingMethod);
+        };
+        console.log(localStorage);
     };
     // focus on the Next button div
     let buttonUp = document.getElementById(divSelected+'__Movie7__Next');
@@ -270,7 +284,11 @@ async function functionButtonLeftRight(sortingMethod, genre, startingPosition, n
         // Recreate the buttons
         createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
         // Display the next 7 movies
-        await generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        for (let i=1; i<=7; i++){
+            popMovieFromStorage(startingPosition-(i+6), genre, sortingMethod);
+        };
+        console.log(localStorage);
     };
     
 };
@@ -302,7 +320,7 @@ async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositi
     let i = 1;
     let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
     for (let film of movieToDisplay){
-        await createMovieDiv('.'+divSelected, film, i);
+        createMovieDiv('.'+divSelected, film, i);
         i++;
     };
     // Assign function to both button
@@ -328,7 +346,6 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
     bestMovieImageContainer.src = infoBestMovie.image_url;
     // Will display a default image if image url doesnt work
     bestMovieImageContainer.onerror = function(){
-        this.onerror=null;
         this.src='img/default_image.jpg';
     }
     // Generate a button to open the modal that will display detailed information page
@@ -346,6 +363,8 @@ function categoriesButtonListened(categorieDiv){
     categoriesButton.addEventListener('click', displayCategoriesMenu);
 };
 function reloadPage(){
+    // Erase local storage
+    localStorage.clear();
     // get back on top
     document.body.scrollIntoView();
     // reload page
@@ -362,22 +381,24 @@ function displayCategoriesMenu(){
     };
 };
 function singleCategorieButtonListened(){
+    // add a listener to categorie button
     document.getElementById('Header__Menu__Categories__List').addEventListener('click', function(categorie){
         if(categorie.target && categorie.target.nodeName == "LI") {
-            console.log(categorie.target.id + " was clicked");
             categorieSelection(categorie.target.id);
         };
-    //categorieButton.addEventListener('click', categorieSelection(categorieButton));
     });
 };
 
 function categorieSelection(categoryIdClicked){
     const categoryClicked = categoryIdClicked.replace('Header__Menu__Categories__List__', '');
     console.log(categoryClicked);
-    const nomCategorie = document.getElementById(categoryIdClicked).innerText;
-    console.log(nomCategorie)
+    const categorieName = document.getElementById(categoryIdClicked).innerText;
+    console.log(categorieName);
+    let categorieAlreadySelected = document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText
+    categorieAlreadySelected = categorieAlreadySelected.replace('Films catégorie ', '').replace(' les mieux notés :', '');
+    console.log(categorieAlreadySelected);
     // dois ajouter && categoerie != display
-    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible'){
+    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible' && categorieName === categorieAlreadySelected){
         //
     }else{
         document.getElementById('Header__Menu__Categories__List').style.visibility='hidden';
@@ -387,20 +408,13 @@ function categorieSelection(categoryIdClicked){
         document.querySelector('.Movies__RomanticMovies').style.visibility='hidden';
         document.querySelector('.Movies__Comedies').style.visibility='hidden';
         document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
-        document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+nomCategorie+' les mieux notés :';
+        document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+categorieName+' les mieux notés :';
         generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, 'Movies__Selectedgenre__Slider');
     };
+        
 };
 
-/*const categorieButton = document.querySelector('.Header__Menu__Categories');
-categorieButton.onclick = function(){
-    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible'){
-        //
-    }else{
-        document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
-        generateAndDisplayDivsMovies('-imdb_score','crime', 1, 7, 'Movies__Selectedgenre__Slider');
-    }
-*/
+var movieStoredNameList = [];
 // Listen to a click on Accueil Button and reload the page if clicked
 accueilButtonListened('.Header__Menu__Accueil');
 // Listen to a click on Categories Button and Display the categories if clicked

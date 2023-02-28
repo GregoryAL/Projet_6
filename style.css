@@ -87,9 +87,6 @@ img{
   grid-gap: 10px;
 
 }
-.btn-class-up{
-  margin-left: auto;
-}
 .Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7, .Movies__Selectedgenre__Slider__Movie1, .Movies__Selectedgenre__Slider__Movie7{
   display: flex;
   position: relative;
