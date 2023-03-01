@@ -103,7 +103,7 @@ img{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
-  overflow: auto;
+  overflow-x: auto;
 }
 .Movies__XX__Slider__Endings{
   position: relative;

@@ -202,7 +202,6 @@ function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
 
 function clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies) {
     // Erase the categorie s grid content
-    console.log(document.querySelectorAll('.'+divSelected+'__Movie'))
     const allDivSelected = document.querySelectorAll('.'+divSelected+'__Movie');
     allDivSelected.forEach(div => {
         div.innerHTML= ""
