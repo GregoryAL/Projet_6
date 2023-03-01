@@ -20,7 +20,6 @@ function createMovieDiv(divSelected, film, i){
     const elementDiv = document.createElement("div");
     elementDiv.className = divSelected+'__Movie'+i+'__MovieContainer';
     const movieImage = document.createElement("img");
-    console.log(film)
     if (film.image === null){
         // Will display a default image if there was no image url
         movieImage.src = 'img/default_image.jpg';
@@ -337,8 +336,7 @@ function pagesToBrowse(firstMovieID, numberOfMovies){
     let pageToAdd= (Math.trunc((firstMovieID-1)/5)+1);
     const numberOfPages  = (Math.trunc((numberOfMovies-1) / 5) + 1);
     let PagesList = [];
-    // add a page to the needed page in case there s a movie info missing and we d need the next page
-    for(let j=0; j < numberOfPages+1; j++){
+    for(let j=0; j <= numberOfPages; j++){
         PagesList.push(pageToAdd);
         pageToAdd++;
     };
@@ -380,14 +378,8 @@ async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, 
         // Get all the movies needed and stock them
         const indexFilm = sortingMethod+genre+filmID.toString();
         const film = JSON.parse(localStorage.getItem(indexFilm));
-        // check if a movie exists, if not take the next one by substracting iterator and adding filmID
-        if (film){
-            moviesToDisplayList.push(film);
-            filmID++;
-        }else{
-            i--;
-            filmID++;
-        }
+        moviesToDisplayList.push(film);
+        filmID++;
     }    
     return moviesToDisplayList;
 };
@@ -435,7 +427,6 @@ async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositi
     // Browse through the categorie's 7 slots and get and display the movie informations
     let i = 1;
     let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
-    console.log(movieToDisplay)
     for (let film of movieToDisplay){
         createMovieDiv('.'+divSelected, film, i);
         i++;
