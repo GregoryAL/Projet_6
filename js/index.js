@@ -20,11 +20,19 @@ function createMovieDiv(divSelected, film, i){
     const elementDiv = document.createElement("div");
     elementDiv.className = divSelected+'__Movie'+i+'__MovieContainer';
     const movieImage = document.createElement("img");
-    movieImage.src = film.image;
-    // Will display a default image if image url doesnt work
+    console.log(film)
+    if (film.image === null){
+        // Will display a default image if there was no image url
+        movieImage.src = 'img/default_image.jpg';
+        movieImage.alt = 'Default Movie Jacket picture'
+    }else{
+        movieImage.src = film.image;
+        movieImage.alt = 'Movie jacket picture';
+    };
+    // Will display a default image picture is url doesnt work
     movieImage.onerror = function(){
         this.src='img/default_image.jpg';
-    }
+    };
     const movieName = document.createElement("h3");
     movieName.innerText = film.title;
     movieName.className = divSelected+'__MovieName';
@@ -58,7 +66,14 @@ function CreateDisplayModal(divSelected, idMovie){
     
 
     const movieImageElement = document.createElement("img");
-    movieImageElement.src = idMovie.image_url;
+    if (idMovie.image_url === null){
+        // Will display a default image if there was no image url
+        movieImageElement.src = 'img/default_image.jpg';
+        movieImageElement.alt = 'Default Movie Jacket picture'
+    }else{
+        movieImageElement.src = idMovie.image_url;
+        movieImageElement.alt = 'Movie jacket picture';
+    };
     movieImageElement.style.cursor = 'default';
     // Will display a default image if image url doesnt work
     movieImageElement.onerror = function(){
@@ -232,7 +247,14 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
     const divButton = document.querySelector(bestMovieContainer+'__MovieInfo__BtnContainer');
     
     const bestMovieImageContainer = document.querySelector(bestMovieContainer+'__Image');
-    bestMovieImageContainer.src = infoBestMovie.image_url;
+    if (infoBestMovie.image_url === null){
+        // Will display a default image if there was no image url
+        bestMovieImageContainer.src = 'img/default_image.jpg';
+        bestMovieImageContainer.alt = 'Default Movie Jacket picture'
+    }else{
+        bestMovieImageContainer.src = infoBestMovie.image_url;
+        bestMovieImageContainer.alt = 'Movie jacket picture';
+    };
     // Will display a default image if image url doesnt work
     bestMovieImageContainer.onerror = function(){
         this.src='img/default_image.jpg';
@@ -315,7 +337,8 @@ function pagesToBrowse(firstMovieID, numberOfMovies){
     let pageToAdd= (Math.trunc((firstMovieID-1)/5)+1);
     const numberOfPages  = (Math.trunc((numberOfMovies-1) / 5) + 1);
     let PagesList = [];
-    for(let j=0; j < numberOfPages; j++){
+    // add a page to the needed page in case there s a movie info missing and we d need the next page
+    for(let j=0; j < numberOfPages+1; j++){
         PagesList.push(pageToAdd);
         pageToAdd++;
     };
@@ -357,8 +380,14 @@ async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, 
         // Get all the movies needed and stock them
         const indexFilm = sortingMethod+genre+filmID.toString();
         const film = JSON.parse(localStorage.getItem(indexFilm));
-        moviesToDisplayList.push(film);
-        filmID++;
+        // check if a movie exists, if not take the next one by substracting iterator and adding filmID
+        if (film){
+            moviesToDisplayList.push(film);
+            filmID++;
+        }else{
+            i--;
+            filmID++;
+        }
     }    
     return moviesToDisplayList;
 };
@@ -406,6 +435,7 @@ async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositi
     // Browse through the categorie's 7 slots and get and display the movie informations
     let i = 1;
     let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
+    console.log(movieToDisplay)
     for (let film of movieToDisplay){
         createMovieDiv('.'+divSelected, film, i);
         i++;
