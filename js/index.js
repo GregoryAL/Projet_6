@@ -1,3 +1,5 @@
+// Classes definition
+
 class infoFilm {
     // Create Object with a movie's usable informations 
     constructor(position, id, title, image)  {
@@ -8,6 +10,8 @@ class infoFilm {
     };
 
 };
+
+// Display functions
 
 function createMovieDiv(divSelected, film, i){
     // Select the right div 
@@ -133,7 +137,9 @@ function browseListToCreateElement(categorie, source){
     // When the informations given by the API is a list, browse through that list and extract each value
     const ListConteneur = document.createElement("p");
     ListConteneur.innerText = categorie+' \n';
+    // check if there s more than 1 entry in the list for display purpose
     if (source.length > 1){
+        // if more than one entry, add them with a ',' and go to next line but for the last one
         let i = 0;
         if (i < (source.length-1)){
             let ListElement = document.createElement("span");
@@ -141,85 +147,17 @@ function browseListToCreateElement(categorie, source){
             ListConteneur.appendChild(ListElement);
             i++;
         };
+        // add the last entry with a '.' at the end
         let ListElement = document.createElement("span");
         ListElement.innerText = source[i]+'.';
         ListConteneur.appendChild(ListElement);
     }else{
+        // add the only entry with a '.' a the end
         const ListElement = document.createElement("span");
         ListElement.innerText = source[0]+'.';
         ListConteneur.appendChild(ListElement);
     };
     return ListConteneur;
-}
-
-function pagesToBrowse(firstMovieID, numberOfMovies){
-    // Calculate and return which page will be needed to get, to later extract each movie informations
-    let pageToAdd= (Math.trunc((firstMovieID-1)/5)+1);
-    const numberOfPages  = (Math.trunc((numberOfMovies-1) / 5) + 1);
-    let PagesList = [];
-    for(let j=0; j < numberOfPages; j++){
-        PagesList.push(pageToAdd);
-        pageToAdd++;
-    };
-    return PagesList;
-};
-
-async function getMovieInfoAndReturnItParsed(idFilm){
-    // get the informations for one movie through its id then parse and return it
-    const reponse = await fetch('http://localhost:8000/api/v1/titles/'+idFilm.toString());
-    let infoFilmParsed = await reponse.json();
-    return infoFilmParsed;
-};
-
-async function getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page){
-    // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
-    const indexPage = 'page'+sortingMethod+genre+page.toString();
-    const reponse = await fetch('http://localhost:8000/api/v1/titles/?genre='+genre+'&page='+page.toString()+'&sort_by='+sortingMethod);
-    const moviesPage = await reponse.json();
-    return moviesPage;
-};
-
-function createMovieObjectAndStoreThem( moviesPage, moviePosition, sortingMethod, genre){
-    // create the needed information for each movie of the page and store them 
-    for (let movie of moviesPage.results) {
-        const movieObject = new infoFilm(moviePosition, movie.id, movie.title, movie.image_url);
-        const storageName = sortingMethod+genre+moviePosition.toString();
-        let movieInStock = localStorage.getItem(storageName);
-        if (movieInStock === null){
-            const movieObjectStringified = JSON.stringify(movieObject);
-            localStorage.setItem(storageName, movieObjectStringified);
-        };
-        moviePosition++;
-    };
-};
-
-async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
-    const moviesPage = await getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page);
-    let moviePosition = (page*5)-4;
-    // create the needed information for each movie of the page and store them 
-    createMovieObjectAndStoreThem(moviesPage, moviePosition, sortingMethod, genre);
-    
-};
-
-
-async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, numberOfMovies){
-    const PagesList = pagesToBrowse(firstMovieID, numberOfMovies);
-    let moviesToDisplayList = [];
-    // Browse through results pages
-    for (let page of PagesList) {
-        // Get all the pages needed and stock them
-        await getMoviesAndStockThemParsed(sortingMethod, genre, page);
-    };
-    let filmID = firstMovieID;
-    for(let i=0; i<numberOfMovies; i++){
-        
-        // Get all the movies needed and stock them
-        const indexFilm = sortingMethod+genre+filmID.toString();
-        const film = JSON.parse(localStorage.getItem(indexFilm));
-        moviesToDisplayList.push(film);
-        filmID++;
-    }    
-    return moviesToDisplayList;
 };
 
 function generateButtonInfo (divButton, idMovie){
@@ -247,55 +185,13 @@ function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
     };
 };
 
-function popMovieFromStorage(moviePosition, genre, sortingMethod){
-    const storageNameToPop = sortingMethod+genre+moviePosition.toString();
-    localStorage.removeItem(storageNameToPop)
-}
-
 function clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies) {
     // Erase the categorie s grid content
     for(let k = 1; k<=7; k++){
         document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
-        console.log('.'+divSelected+'__Movie'+k, document.querySelector('.'+divSelected+'__Movie'+k).innerHTML);
-        
     };
     // Recreate the buttons
     createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
-}
-
-function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
-    // Assign function to both arrow left and right
-    // Focus on the Previous button div
-    let buttonDown = document.getElementById(divSelected+'__Movie1__Previous');
-    buttonDown.onclick = function(){
-        // Change the starting position to display the previous 7 movies          
-        startingPosition -=7;
-        // Remove information from the slider grid
-        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
-        // Display the previous 7 movies
-        generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
-        // manage localStorage by removing unused entries
-        for (let i=1; i<=7; i++){
-            popMovieFromStorage(startingPosition+(i+6), genre, sortingMethod);
-        };
-        console.log(localStorage);
-    };
-    // focus on the Next button div
-    let buttonUp = document.getElementById(divSelected+'__Movie7__Next');
-    buttonUp.onclick = async function(){  
-        // change the starting position to display the previous 7 movies         
-        startingPosition +=7;
-        // Remove information from the slider grid
-        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
-        // Display the next 7 movies
-        generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
-        // manage localStorage by removing unused entries
-        for (let i=1; i<=7; i++){
-            popMovieFromStorage(startingPosition-(i+6), genre, sortingMethod);
-        };
-        console.log(localStorage);
-    };
-    
 };
 
 function createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
@@ -318,18 +214,6 @@ function createLeftRightButton(sortingMethod, genre, startingPosition, numberOfM
     };
     // Assign a function to both button
     functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected);
-};
-
-async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
-    // Browse through the categorie's 7 slots and get and display the movie informations
-    let i = 1;
-    let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
-    for (let film of movieToDisplay){
-        createMovieDiv('.'+divSelected, film, i);
-        i++;
-    };
-    // Assign function to both button
-    functionButtonLeftRight(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
 };
 
 async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOfMovies, bestMovieContainer){
@@ -357,16 +241,7 @@ async function bestMovieDisplay(sortingMethod, genre, startingPosition, numberOf
     generateButtonInfo(divButton, idBestMovie);
 
 };
-function accueilButtonListened(selectedDiv){
-    // Listen for a click on Accueil button
-    const accueilButton = document.querySelector(selectedDiv);
-    accueilButton.addEventListener('click', reloadPage);
-};
-function categoriesButtonListened(categorieDiv){
-    // Listen for a click on Categories Button
-    const categoriesButton = document.querySelector(categorieDiv);
-    categoriesButton.addEventListener('click', displayCategoriesMenu);
-};
+
 function reloadPage(){
     // Erase local storage
     localStorage.clear();
@@ -375,6 +250,7 @@ function reloadPage(){
     // reload page
     window.location.reload(true);
 };
+
 function displayCategoriesMenu(){
     // Display or hide all the categories available
     if (document.getElementById('Header__Menu__Categories__List').style.visibility === 'visible'){
@@ -383,6 +259,176 @@ function displayCategoriesMenu(){
         document.getElementById('Header__Menu__Categories__List').style.visibility = 'visible';
     };
 };
+
+function categorieSelection(categoryIdClicked){
+    // Display the category selected
+    // extract the genre
+    const categoryClicked = categoryIdClicked.replace('Header__Menu__Categories__List__', '');
+    const categorieName = document.getElementById(categoryIdClicked).innerText;
+    // extract the name of the previous category selected
+    let categorieAlreadySelected = document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText
+    categorieAlreadySelected = categorieAlreadySelected.replace('Films catégorie ', '').replace(' les mieux notés :', '');
+    // store the main div name
+    const divSelected = 'Movies__Selectedgenre__Slider'
+    
+    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible' && categorieName === categorieAlreadySelected){
+        // if the selected categorie is already in display, do nothing
+    }else{
+        // if not clear the slider in case another categorie was displayed
+        clearSlidersView(divSelected, '-imdb_score', categoryClicked, 1, 7);
+        // hide all the divs but the header and the one where the categorie selected will be displayed
+        document.getElementById('Header__Menu__Categories__List').style.visibility='hidden';
+        document.querySelector('.Movies__BestMovie').style.visibility='hidden';
+        document.querySelector('.Movies__PopularMovies').style.visibility='hidden';
+        document.querySelector('.Movies__ActionMovies').style.visibility='hidden';
+        document.querySelector('.Movies__RomanticMovies').style.visibility='hidden';
+        document.querySelector('.Movies__Comedies').style.visibility='hidden';
+        document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
+        // change the category title to reflect user s choice
+        document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+categorieName+' les mieux notés :';
+        // fetch organise and display the category selected
+        generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, divSelected);
+    };    
+};
+
+// Fetching functions
+
+async function getMovieInfoAndReturnItParsed(idFilm){
+    // get the informations for one movie through its id then parse and return it
+    const reponse = await fetch('http://localhost:8000/api/v1/titles/'+idFilm.toString());
+    let infoFilmParsed = await reponse.json();
+    return infoFilmParsed;
+};
+
+async function getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page){
+    // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
+    const indexPage = 'page'+sortingMethod+genre+page.toString();
+    const reponse = await fetch('http://localhost:8000/api/v1/titles/?genre='+genre+'&page='+page.toString()+'&sort_by='+sortingMethod);
+    const moviesPage = await reponse.json();
+    return moviesPage;
+};
+
+// Organising data functions
+
+function pagesToBrowse(firstMovieID, numberOfMovies){
+    // Calculate and return which page will be needed to get, to later extract each movie informations
+    let pageToAdd= (Math.trunc((firstMovieID-1)/5)+1);
+    const numberOfPages  = (Math.trunc((numberOfMovies-1) / 5) + 1);
+    let PagesList = [];
+    for(let j=0; j < numberOfPages; j++){
+        PagesList.push(pageToAdd);
+        pageToAdd++;
+    };
+    return PagesList;
+};
+
+function createMovieObjectAndStoreThem( moviesPage, moviePosition, sortingMethod, genre){
+    // create the needed information for each movie of the page and store them 
+    for (let movie of moviesPage.results) {
+        const movieObject = new infoFilm(moviePosition, movie.id, movie.title, movie.image_url);
+        const storageName = sortingMethod+genre+moviePosition.toString();
+        let movieInStock = localStorage.getItem(storageName);
+        if (movieInStock === null){
+            const movieObjectStringified = JSON.stringify(movieObject);
+            localStorage.setItem(storageName, movieObjectStringified);
+        };
+        moviePosition++;
+    };
+};
+
+async function getMoviesAndStockThemParsed(sortingMethod, genre, page){
+    const moviesPage = await getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page);
+    let moviePosition = (page*5)-4;
+    // create the needed information for each movie of the page and store them 
+    createMovieObjectAndStoreThem(moviesPage, moviePosition, sortingMethod, genre);
+    
+};
+
+async function getMoviesAndReturnThemParsed(sortingMethod, genre, firstMovieID, numberOfMovies){
+    const PagesList = pagesToBrowse(firstMovieID, numberOfMovies);
+    let moviesToDisplayList = [];
+    // Browse through results pages
+    for (let page of PagesList) {
+        // Get all the pages needed and stock them
+        await getMoviesAndStockThemParsed(sortingMethod, genre, page);
+    };
+    let filmID = firstMovieID;
+    for(let i=0; i<numberOfMovies; i++){
+        // Get all the movies needed and stock them
+        const indexFilm = sortingMethod+genre+filmID.toString();
+        const film = JSON.parse(localStorage.getItem(indexFilm));
+        moviesToDisplayList.push(film);
+        filmID++;
+    }    
+    return moviesToDisplayList;
+};
+
+function popMovieFromStorage(moviePosition, genre, sortingMethod){
+    // free storage space
+    const storageNameToPop = sortingMethod+genre+moviePosition.toString();
+    localStorage.removeItem(storageNameToPop)
+};
+
+function functionButtonLeftRight(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+    // Assign function to both arrow left and right
+    // Focus on the Previous button div
+    let buttonDown = document.getElementById(divSelected+'__Movie1__Previous');
+    buttonDown.onclick = function(){
+        // Change the starting position to display the previous 7 movies          
+        startingPosition -=7;
+        // Remove information from the slider grid
+        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
+        // Display the previous 7 movies
+        generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        // manage localStorage by removing unused entries
+        for (let i=1; i<=7; i++){
+            popMovieFromStorage(startingPosition+(i+6), genre, sortingMethod);
+        };
+    };
+    // focus on the Next button div
+    let buttonUp = document.getElementById(divSelected+'__Movie7__Next');
+    buttonUp.onclick = async function(){  
+        // change the starting position to display the previous 7 movies         
+        startingPosition +=7;
+        // Remove information from the slider grid
+        clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies);
+        // Display the next 7 movies
+        generateAndDisplayDivsMovies(sortingMethod,genre,startingPosition,numberOfMovies, divSelected);
+        // manage localStorage by removing unused entries
+        for (let i=1; i<=7; i++){
+            popMovieFromStorage(startingPosition-(i+6), genre, sortingMethod);
+        };
+    };
+    
+};
+
+async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
+    // Browse through the categorie's 7 slots and get and display the movie informations
+    let i = 1;
+    let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
+    for (let film of movieToDisplay){
+        createMovieDiv('.'+divSelected, film, i);
+        i++;
+    };
+    // Assign function to both button
+    functionButtonLeftRight(sortingMethod,genre,startingPosition,numberOfMovies,divSelected);
+};
+
+// listening events functions
+
+function accueilButtonListened(selectedDiv){
+    // Listen for a click on Accueil button
+    const accueilButton = document.querySelector(selectedDiv);
+    accueilButton.addEventListener('click', reloadPage);
+};
+
+function categoriesButtonListened(categorieDiv){
+    // Listen for a click on Categories Button
+    const categoriesButton = document.querySelector(categorieDiv);
+    categoriesButton.addEventListener('click', displayCategoriesMenu);
+};
+
+
 function singleCategorieButtonListened(){
     // add a listener to categorie button
     document.getElementById('Header__Menu__Categories__List').addEventListener('click', function(categorie){
@@ -392,32 +438,7 @@ function singleCategorieButtonListened(){
     });
 };
 
-function categorieSelection(categoryIdClicked){
-    const categoryClicked = categoryIdClicked.replace('Header__Menu__Categories__List__', '');
-    console.log('category ',categoryClicked);
-    const categorieName = document.getElementById(categoryIdClicked).innerText;
-    console.log('categorie ', categorieName);
-    let categorieAlreadySelected = document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText
-    categorieAlreadySelected = categorieAlreadySelected.replace('Films catégorie ', '').replace(' les mieux notés :', '');
-    console.log('previous cat', categorieAlreadySelected);
-    const divSelected = 'Movies__Selectedgenre__Slider'
-    
-    if (document.querySelector('.Movies__Selectedgenre').style.visibility === 'visible' && categorieName === categorieAlreadySelected){
-        //
-    }else{
-        clearSlidersView(divSelected, '-imdb_score', categoryClicked, 1, 7);
-        document.getElementById('Header__Menu__Categories__List').style.visibility='hidden';
-        document.querySelector('.Movies__BestMovie').style.visibility='hidden';
-        document.querySelector('.Movies__PopularMovies').style.visibility='hidden';
-        document.querySelector('.Movies__ActionMovies').style.visibility='hidden';
-        document.querySelector('.Movies__RomanticMovies').style.visibility='hidden';
-        document.querySelector('.Movies__Comedies').style.visibility='hidden';
-        document.querySelector('.Movies__Selectedgenre').style.visibility='visible';
-        document.getElementById('Movies__Selectedgenre__TitleCategorie').innerText='Films catégorie '+categorieName+' les mieux notés :';
-        generateAndDisplayDivsMovies('-imdb_score',categoryClicked, 1, 7, divSelected);
-    };
-        
-};
+// Call the main functions
 
 // Listen to a click on Accueil Button and reload the page if clicked
 accueilButtonListened('.Header__Menu__Accueil');

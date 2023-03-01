@@ -1,3 +1,12 @@
+body{
+  background-color: black;
+  color:white;
+}
+img{
+  border-radius: 10px;
+  cursor:pointer;
+}
+
 .Movies__ModalMovie {
   position: fixed;
   width: 90vw;
@@ -15,29 +24,19 @@
   justify-content: center;
 }
 .Movies__ModalMovie__Content {
+  max-height: 47em;
   border-radius: 10px;
   background: black;
   position: relative;
   padding: 30px;
   border: 2px solid white;
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
   color: white;
 }
-.buttonModaleX:hover, .Header__Menu__Accueil:hover, .Header__Menu__Categories:hover, .Header__Menu__Categories__List_Item:hover{
+.buttonModaleX:hover, .Header__Menu__Accueil:hover, .Header__Menu__Categories:hover, .Header__Menu__Categories__List_Item:hover, .ButtoninfoFilm:hover{
   font-weight: bold;
   cursor:pointer;
-
 }
-body{
-  background-color: black;
-  color:white;
-}
-img{
-  border-radius: 10px;
-  cursor:pointer;
-}
-
 .Header{
   top:0;
   z-index: 2;
@@ -85,18 +84,17 @@ img{
   display:grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-gap: 10px;
-
+  overflow: auto;
 }
 .Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7, .Movies__Selectedgenre__Slider__Movie1, .Movies__Selectedgenre__Slider__Movie7{
-  display: flex;
   position: relative;
+}
+.Movies__BestMovie, .Movies__PopularMovies__Slider__Movie1, .Movies__PopularMovies__Slider__Movie7, .Movies__ActionMovies__Slider__Movie1, .Movies__ActionMovies__Slider__Movie7, .Movies__RomanticMovies__Slider__Movie1, .Movies__RomanticMovies__Slider__Movie7, .Movies__Comedies__Slider__Movie1, .Movies__Comedies__Slider__Movie7, .Movies__Selectedgenre__Slider__Movie1, .Movies__Selectedgenre__Slider__Movie7{
+  display: flex;
 }
 .Movies__BestMovie, .Movies__PopularMovies, .Movies__ActionMovies, .Movies__RomanticMovies, .Movies__Comedies, .Movies__Selectedgenre{
   border: 2px solid white;
   border-radius: 10px;
-}
-.Movies__BestMovie{
-  display: flex;
 }
 .Movies__BestMovie__MovieInfo{
   z-index: 1;
@@ -116,7 +114,6 @@ img{
   color: rgba(220, 220, 220, 0.8);
   background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
-  
 }
 .Movies__Slider__Previous{
   left: 0;
@@ -137,7 +134,4 @@ img{
   border: 1px solid white;
   border-radius: 3px;
 }
-.ButtoninfoFilm:hover{
-  font-weight: bold;
-  cursor:pointer;
-}
+
