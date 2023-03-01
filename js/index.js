@@ -15,7 +15,7 @@ class infoFilm {
 
 function createMovieDiv(divSelected, film, i){
     // Select the right div 
-    const moviesDiv = document.querySelector(divSelected+'__Movie'+i);
+    const moviesDiv = document.getElementById(divSelected+'__Movie'+i);
     // Create containers that will hold image, title and a button
     const elementDiv = document.createElement("div");
     elementDiv.className = divSelected+'__Movie'+i+'__MovieContainer';
@@ -23,7 +23,7 @@ function createMovieDiv(divSelected, film, i){
     if (film.image === null){
         // Will display a default image if there was no image url
         movieImage.src = 'img/default_image.jpg';
-        movieImage.alt = 'Default Movie Jacket picture'
+        movieImage.alt = 'Default Movie Jacket picture';
     }else{
         movieImage.src = film.image;
         movieImage.alt = 'Movie jacket picture';
@@ -31,6 +31,7 @@ function createMovieDiv(divSelected, film, i){
     // Will display a default image picture is url doesnt work
     movieImage.onerror = function(){
         this.src='img/default_image.jpg';
+        this.alt = 'Default Movie Jacket picture';
     };
     const movieName = document.createElement("h3");
     movieName.innerText = film.title;
@@ -201,23 +202,25 @@ function modalOpening(elementClicked, modalContainer, modalContent, idMovie){
 
 function clearSlidersView(divSelected, sortingMethod, genre, startingPosition, numberOfMovies) {
     // Erase the categorie s grid content
-    for(let k = 1; k<=7; k++){
-        document.querySelector('.'+divSelected+'__Movie'+k).innerHTML= "";
-    };
+    console.log(document.querySelectorAll('.'+divSelected+'__Movie'))
+    const allDivSelected = document.querySelectorAll('.'+divSelected+'__Movie');
+    allDivSelected.forEach(div => {
+        div.innerHTML= ""
+    });
     // Recreate the buttons
     createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected); 
 };
 
 function createLeftRightButton(sortingMethod, genre, startingPosition, numberOfMovies, divSelected){
     // Create the Left and Right button
-    const movie1Container = document.querySelector('.'+divSelected+'__Movie1');
+    const movie1Container = document.getElementById(divSelected+'__Movie1');
     let divButtonDown = document.createElement("div");
     divButtonDown.className = "Movies__Slider__Previous";
     divButtonDown.id = divSelected+"__Movie1__Previous";
     divButtonDown.innerText = '<';
     divButtonDown.style.visibility = 'hidden';
     movie1Container.appendChild(divButtonDown);
-    const movie7Container = document.querySelector('.'+divSelected+'__Movie7');
+    const movie7Container = document.getElementById(divSelected+'__Movie7');
     let divButtonUp = document.createElement("div");
     divButtonUp.className = "Movies__Slider__Next";
     divButtonUp.id = divSelected+"__Movie7__Next";
@@ -428,7 +431,7 @@ async function generateAndDisplayDivsMovies(sortingMethod, genre, startingPositi
     let i = 1;
     let movieToDisplay = await getMoviesAndReturnThemParsed(sortingMethod, genre, startingPosition, numberOfMovies);
     for (let film of movieToDisplay){
-        createMovieDiv('.'+divSelected, film, i);
+        createMovieDiv(divSelected, film, i);
         i++;
     };
     // Assign function to both button
