@@ -216,7 +216,7 @@ function createLeftRightButton(sortingMethod, genre, startingPosition, numberOfM
     let divButtonDown = document.createElement("div");
     divButtonDown.className = "Movies__Slider__Previous";
     divButtonDown.id = divSelected+"__Movie1__Previous";
-    divButtonDown.innerText = '<';
+    divButtonDown.innerText = '&lt';
     divButtonDown.style.visibility = 'hidden';
     movie1Container.appendChild(divButtonDown);
     const movie7Container = document.getElementById(divSelected+'__Movie7');
