@@ -178,7 +178,7 @@ function browseListToCreateElement(categorie, source){
 function generateButtonInfo (divButton, idMovie){
     let buttonInfo = document.createElement('button');
     buttonInfo.type = 'button';
-    buttonInfo.innerHTML = "Plus d'information";
+    buttonInfo.innerHTML = "Plus d'informations";
     buttonInfo.className = 'ButtoninfoFilm';
     // When the button is clicked, open a modal with the movie's detailed informations
     modalOpening(buttonInfo, '.Movies__ModalMovie', '.Movies__ModalMovie__Content', idMovie)
@@ -325,7 +325,6 @@ async function getMovieInfoAndReturnItParsed(idFilm){
 
 async function getMoviesFromPageAndStockThemParsed(sortingMethod, genre, page){
     // check if the information from a page result is already stored, if so it parses it, if not, it gets, stringify  and store it
-    const indexPage = 'page'+sortingMethod+genre+page.toString();
     const reponse = await fetch('http://localhost:8000/api/v1/titles/?genre='+genre+'&page='+page.toString()+'&sort_by='+sortingMethod);
     const moviesPage = await reponse.json();
     return moviesPage;

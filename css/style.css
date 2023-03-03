@@ -85,6 +85,10 @@ img{
 }
 .Movies__BestMovie__MovieInfo{
   z-index: 1;
+  font-size: large;
+}
+.Movies__BestMovie__MovieInfo__Title{
+  font-weight: bold;
   font-size: larger;
 }
 .Movies__BestMovie__Image{
